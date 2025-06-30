@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\StatusRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StatusRepository::class)]
@@ -15,6 +17,17 @@ class Status
 
     #[ORM\Column(length: 50)]
     private ?string $label = null;
+
+    /**
+     * @var Collection<int, Hangout>
+     */
+    #[ORM\OneToMany(targetEntity: Hangout::class, mappedBy: 'status')]
+    private Collection $hangouts;
+
+    public function __construct()
+    {
+        $this->hangouts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -29,6 +42,36 @@ class Status
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hangout>
+     */
+    public function getHangouts(): Collection
+    {
+        return $this->hangouts;
+    }
+
+    public function addHangout(Hangout $hangout): static
+    {
+        if (!$this->hangouts->contains($hangout)) {
+            $this->hangouts->add($hangout);
+            $hangout->setStatus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHangout(Hangout $hangout): static
+    {
+        if ($this->hangouts->removeElement($hangout)) {
+            // set the owning side to null (unless already changed)
+            if ($hangout->getStatus() === $this) {
+                $hangout->setStatus(null);
+            }
+        }
 
         return $this;
     }
