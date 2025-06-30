@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -10,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé.')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PSEUDO', fields: ['pseudo'])]
 #[UniqueEntity(fields: ['pseudo'], message: 'There is already an account with this pseudo')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -40,7 +43,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true)]
+
     private ?string $mail = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -54,6 +58,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?bool $active = null;
+
+    /**
+     * @var Collection<int, Hangout>
+     */
+    #[ORM\ManyToMany(targetEntity: Hangout::class, inversedBy: 'users')]
+    private Collection $hangout;
+
+    /**
+     * @var Collection<int, Hangout>
+     */
+    #[ORM\OneToMany(targetEntity: Hangout::class, mappedBy: 'organizer', orphanRemoval: true)]
+    private Collection $organizer;
+
+    #[ORM\ManyToOne(inversedBy: 'user')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Campus $campus = null;
+
+    public function __construct()
+    {
+        $this->hangout = new ArrayCollection();
+        $this->organizer = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -79,7 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->pseudo;
+        return (string)$this->pseudo;
     }
 
     /**
@@ -208,6 +234,72 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hangout>
+     */
+    public function getHangout(): Collection
+    {
+        return $this->hangout;
+    }
+
+    public function addHangout(Hangout $hangout): static
+    {
+        if (!$this->hangout->contains($hangout)) {
+            $this->hangout->add($hangout);
+        }
+
+        return $this;
+    }
+
+    public function removeHangout(Hangout $hangout): static
+    {
+        $this->hangout->removeElement($hangout);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hangout>
+     */
+    public function getOrganizer(): Collection
+    {
+        return $this->organizer;
+    }
+
+    public function addOrganizer(Hangout $organizer): static
+    {
+        if (!$this->organizer->contains($organizer)) {
+            $this->organizer->add($organizer);
+            $organizer->setOrganizer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganizer(Hangout $organizer): static
+    {
+        if ($this->organizer->removeElement($organizer)) {
+            // set the owning side to null (unless already changed)
+            if ($organizer->getOrganizer() === $this) {
+                $organizer->setOrganizer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCampus(): ?Campus
+    {
+        return $this->campus;
+    }
+
+    public function setCampus(?Campus $campus): static
+    {
+        $this->campus = $campus;
 
         return $this;
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
@@ -18,6 +20,17 @@ class City
 
     #[ORM\Column(length: 10)]
     private ?string $zipCode = null;
+
+    /**
+     * @var Collection<int, Spot>
+     */
+    #[ORM\OneToMany(targetEntity: Spot::class, mappedBy: 'city')]
+    private Collection $spot;
+
+    public function __construct()
+    {
+        $this->spot = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -44,6 +57,36 @@ class City
     public function setZipCode(string $zipCode): static
     {
         $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Spot>
+     */
+    public function getSpot(): Collection
+    {
+        return $this->spot;
+    }
+
+    public function addSpot(Spot $spot): static
+    {
+        if (!$this->spot->contains($spot)) {
+            $this->spot->add($spot);
+            $spot->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSpot(Spot $spot): static
+    {
+        if ($this->spot->removeElement($spot)) {
+            // set the owning side to null (unless already changed)
+            if ($spot->getCity() === $this) {
+                $spot->setCity(null);
+            }
+        }
 
         return $this;
     }

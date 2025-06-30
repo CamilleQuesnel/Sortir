@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SpotRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SpotRepository::class)]
@@ -24,6 +26,21 @@ class Spot
 
     #[ORM\Column(nullable: true)]
     private ?float $longitude = null;
+
+    /**
+     * @var Collection<int, Hangout>
+     */
+    #[ORM\OneToMany(targetEntity: Hangout::class, mappedBy: 'spot')]
+    private Collection $hangouts;
+
+    #[ORM\ManyToOne(inversedBy: 'spot')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?City $city = null;
+
+    public function __construct()
+    {
+        $this->hangouts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +91,48 @@ class Spot
     public function setLongitude(?float $longitude): static
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hangout>
+     */
+    public function getHangouts(): Collection
+    {
+        return $this->hangouts;
+    }
+
+    public function addHangout(Hangout $hangout): static
+    {
+        if (!$this->hangouts->contains($hangout)) {
+            $this->hangouts->add($hangout);
+            $hangout->setSpot($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHangout(Hangout $hangout): static
+    {
+        if ($this->hangouts->removeElement($hangout)) {
+            // set the owning side to null (unless already changed)
+            if ($hangout->getSpot() === $this) {
+                $hangout->setSpot(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function setCity(?City $city): static
+    {
+        $this->city = $city;
 
         return $this;
     }
