@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -21,7 +22,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    #[Assert\NotBlank(message: 'Please enter your pseudo')]
+    #[Assert\Length(max: 180, maxMessage: 'Too long ! 180 characters at most !')]
+    #[Assert\Length(min: 2, minMessage: 'Too short ! 2 characters at most !')]
     #[ORM\Column(length: 180)]
     private ?string $pseudo = null;
 
@@ -34,22 +37,74 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
+
+    #[Assert\NotBlank(message: 'Please enter a password')]
+    #[Assert\Length(
+        min: 8,
+        max: 4096,
+        minMessage: 'Your password should be at least {{ limit }} characters',
+    )]
+    #[Assert\Regex(
+        pattern: '/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}/',
+        message: 'Your password must include at least one uppercase letter, one lowercase letter, one digit and one special character'
+    )]
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Assert\NotBlank(message: 'Please enter your first name')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Your first name must be at least {{ limit }} characters long',
+        maxMessage: 'Your first name cannot be longer than {{ limit }} characters'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[\p{L}\'\- ]+$/u',
+        message: 'Your first name can only contain letters, spaces, apostrophes and hyphens'
+    )]
     #[ORM\Column(length: 50)]
     private ?string $firstName = null;
-
+    #[Assert\NotBlank(message: 'Please enter your last name')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Your last name must be at least {{ limit }} characters long',
+        maxMessage: 'Your last name cannot be longer than {{ limit }} characters'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[\p{L}\'\- ]+$/u',
+        message: 'Your last name can only contain letters, spaces, apostrophes and hyphens'
+    )]
     #[ORM\Column(length: 50)]
     private ?string $lastName = null;
 
+    #[Assert\NotBlank(message: 'Please enter your email address')]
+    #[Assert\Email(
+        message: 'The email "{{ value }}" is not a valid email.',
+        mode: 'html5'
+    )]
+    #[Assert\Length(
+        max: 180,
+        maxMessage: 'The email should not be longer than {{ limit }} characters'
+    )]
     #[ORM\Column(length: 100, unique: true)]
 
     private ?string $mail = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+
+    #[Assert\NotBlank(message: 'Please enter your phone number')]
+    #[Assert\Length(
+        min: 10,
+        max: 15,
+        minMessage: 'The phone number must be at least {{ limit }} digits',
+        maxMessage: 'The phone number cannot exceed {{ limit }} digits'
+    )]
+    #[Assert\Regex(
+        pattern: '/^\+?[0-9]{10,15}$/',
+        message: 'Please enter a valid phone number (digits only, with optional +)'
+    )]
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $phoneNumber = null;
 

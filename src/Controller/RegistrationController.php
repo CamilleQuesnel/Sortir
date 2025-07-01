@@ -8,6 +8,7 @@ use App\Security\SecurityControllerAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -23,18 +24,34 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $password = $form->get('plainPassword')->getData();
+            $confirmPassword = $form->get('confirmPassword')->getData();
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            if ($password !== $confirmPassword) {
+                // Ajoute une erreur et empêche l'enregistrement
+                $form->get('confirmPassword')->addError(new FormError("Passwords don't match"));
+            } else {
+                // Encode le mot de passe
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword($user, $password)
+                );
 
-            // do anything else you need here, like send an email
+                // Default role
+                if (empty($user->getRoles())) {
+                    $user->setRoles(['ROLE_USER']);
+                }
+                $user->setAdmin(false);
+                $user->setActive(true);
 
-            return $security->login($user, SecurityControllerAuthenticator::class, 'main');
+                $entityManager->persist($user);
+                $entityManager->flush();
+
+                // Authentifie l'utilisateur après inscription
+                $security->login($user, SecurityControllerAuthenticator::class, 'main');
+                return $this->redirectToRoute('app_main');
+
+            }
         }
 
         return $this->render('registration/register.html.twig', [

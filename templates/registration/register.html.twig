@@ -5,15 +5,19 @@
 {% block body %}
     <h1>Register</h1>
 
+
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.pseudo) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    {{ form_row(registrationForm.pseudo) }}
+    {{ form_row(registrationForm.mail) }}
+    {{ form_row(registrationForm.plainPassword) }}
+    {{ form_row(registrationForm.confirmPassword) }}
+    {{ form_row(registrationForm.firstname) }}
+    {{ form_row(registrationForm.lastname) }}
+    {{ form_row(registrationForm.phoneNumber) }}
+    {{ form_row(registrationForm.campus) }}
 
-        <button type="submit" class="btn">Register</button>
+    <button type="submit" class="btn">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}
