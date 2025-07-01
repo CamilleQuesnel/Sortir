@@ -8,11 +8,17 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class MainController extends AbstractController
 {
-    #[Route('/main', name: 'app_main')]
-    public function main(): Response
+    #[Route('/', name: 'home')]
+    public function index(): Response
     {
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
-        ]);
+        return $this->redirectToRoute('app_login');
     }
+//    #[Route('/main', name: 'app_main')]
+//    public function main(): Response
+//    {
+//        return $this->render('main/index.html.twig', [
+//            'controller_name' => 'MainController',
+//        ]);
+//    }
+
 }
