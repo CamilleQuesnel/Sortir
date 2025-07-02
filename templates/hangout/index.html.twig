@@ -1,53 +1,60 @@
-{# {% extends 'base.html.twig' %} #}
-
-{# {% block title %}Hello HangoutController!{% endblock %} #}
-
-{# {% block body %} #}
-{#    <main> #}
-{#        <div class="example-wrapper"> #}
-{#            <h1>Hello {{ controller_name }}! ✅</h1> #}
-{#            {{ form(form) }} #}
-
-{#        </div> #}
-{#    </main> #}
-{# {% endblock %} #}
 {% extends 'base.html.twig' %}
 
+ {% block title %}Hello HangoutController!{% endblock %}
+
 {% block body %}
-    <main>
+    <main id="hangout_main">
         <div id="hangout_date">
             <p>Date du jour : {{ "now"|date("d/m/Y") }}</p>
             <p>Participant : {{ app.user.firstName|capitalize }} {{ app.user.lastName|first|capitalize }}.</p>
         </div>
-        <div class="filters">
+        <div class="filters_and_results">
             <section class="filters">
-                <div>
-                    <h3>Filtrer les sorties</h3>
+                <div class="filters">
                     {{ form_start(form) }}
-                    {{ form_row(form.campus) }}
-                    {{ form_row(form.outputNameContains) }}
-                    {{ form_row(form.dateFrom) }}
-                    {{ form_row(form.dateTo) }}
+
+                    <div id="form_filters">
+                        <h3>Filtrer les sorties</h3>
+                        <div>
+                            {{ form_label(form.campus) }}
+                            {{ form_widget(form.campus) }}
+                        </div>
+                        <div>
+                            {{ form_label(form.outputNameContains) }}
+                            {{ form_widget(form.outputNameContains) }}
+                        </div>
+                        <div>
+                            {{ form_label(form.dateFrom) }}
+                            {{ form_widget(form.dateFrom) }}
+                            {{ form_label(form.dateTo) }}
+                            {{ form_widget(form.dateTo) }}
+                        </div>
+                    </div>
+                    <div id="form_select">
+                        <div>
+                            {{ form_widget(form.isOrganizer) }}
+                            {{ form_label(form.isOrganizer) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isRegistered) }}
+                            {{ form_label(form.isRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isNotRegistered) }}
+                            {{ form_label(form.isNotRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isPast) }}
+                            {{ form_label(form.isPast) }}
+                        </div>
+                    </div>
+
+                    <div id="btn-search">
+                        {{ form_row(form.search) }}
+                    </div>
+
+                    {{ form_end(form) }}
                 </div>
-                <div>
-                    <div>
-                        {{ form_widget(form.isOrganizer) }}
-                        {{ form_label(form.isOrganizer) }}
-                    </div>
-                    <div>
-                        {{ form_widget(form.isRegistered) }}
-                        {{ form_label(form.isRegistered) }}
-                    </div>
-                    <div>
-                        {{ form_widget(form.isNotRegistered) }}
-                        {{ form_label(form.isNotRegistered) }}
-                    </div>
-                    <div>
-                        {{ form_widget(form.isPast) }}
-                        {{ form_label(form.isPast) }}
-                    </div>
-                </div>
-                {{ form_end(form) }}
             </section>
             <section class="results">
                 <table class="table table-bordered table-striped">
@@ -64,6 +71,7 @@
                     </tr>
                     </thead>
                     <tbody>
+
                     {% for sortie in hangoutAll %}
                         <tr>
                             <td>{{ sortie.name }}</td>
@@ -107,36 +115,6 @@
                     </tbody>
                 </table>
             </section>
-        </div>
-
-
-        <div>
-
-        </div>
-        {#        <section class="results"> #}
-        {#            <table> #}
-        {#                <thead> #}
-        {#                <tr> #}
-        {#                    <th>Nom de la sortie</th> #}
-        {#                    <th>Date</th> #}
-        {#                    <th>Clôture</th> #}
-        {#                    <th>inscrits/places</th> #}
-        {#                    <th>État</th> #}
-        {#                    <th>Inscrit</th> #}
-        {#                    <th>Organisateur</th> #}
-        {#                    <th>Actions</th> #}
-        {#                </tr> #}
-        {#                </thead> #}
-        {#                <tbody> #}
-        {#                {% for hangout in hangoutAll %} #}
-        {#                    <tr> #}
-        {#                        <td>{{ hangout.name }}</td> #}
-        {#                    </tr> #}
-        {#                {% endfor %} #}
-        {#                </tbody> #}
-        {#            </table> #}
-        {#            <a class="btn-create" href="#">Créer une sortie</a> #}
-        {#        </section> #}
         </div>
     </main>
 {% endblock %}

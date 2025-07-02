@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\DTO\HangoutFilterDTO;
 use App\Entity\Campus;
 use App\Entity\Hangout;
 use App\Entity\Spot;
@@ -29,13 +30,13 @@ class HangoutForm extends AbstractType
                 'required' => false
             ])
             ->add('outputNameContains', TextType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Le nom de la sortie contient :',
                 'required' => false,
                 'attr' => ['placeholder' => 'search']
             ])
             ->add('dateFrom', DateType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Entre',
                 'required' => false,
                 'widget' => 'single_text',
@@ -43,7 +44,7 @@ class HangoutForm extends AbstractType
                 'attr' => ['class' => 'datepicker']
             ])
             ->add('dateTo', DateType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'et',
                 'required' => false,
                 'widget' => 'single_text',
@@ -51,22 +52,22 @@ class HangoutForm extends AbstractType
                 'attr' => ['class' => 'datepicker']
             ])
             ->add('isOrganizer', CheckboxType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Sorties dont je suis l’organisateur/trice',
                 'required' => false
             ])
             ->add('isRegistered', CheckboxType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Sorties auxquelles je suis inscrit/e',
                 'required' => false
             ])
             ->add('isNotRegistered', CheckboxType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Sorties auxquelles je ne suis pas inscrit/e',
                 'required' => false
             ])
             ->add('isPast', CheckboxType::class, [
-                'mapped' => false,
+//                'mapped' => false,
                 'label' => 'Sorties passées',
                 'required' => false
             ])
@@ -81,7 +82,7 @@ class HangoutForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Hangout::class,
+            'data_class' => HangoutFilterDTO::class,
         ]);
     }
 }
