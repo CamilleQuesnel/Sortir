@@ -14,7 +14,7 @@ class CityFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $city = new City();
             $city->setName($faker->city());
             $city->setZipCode($faker->postcode());

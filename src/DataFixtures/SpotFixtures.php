@@ -17,7 +17,7 @@ class SpotFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 150; $i++) {
             $spot = new Spot();
             $spot->setName('Lieu ' . $faker->word());
             $spot->setAddress($faker->address());
