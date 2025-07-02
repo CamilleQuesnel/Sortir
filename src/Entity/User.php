@@ -90,6 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[ORM\Column(length: 100, unique: true)]
     private ?string $mail = null;
+
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $image = null;
 
