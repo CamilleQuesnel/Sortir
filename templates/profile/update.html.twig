@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+<h1>My profile - {{ app.user.pseudo }}</h1>
+
+<div class="form-wrapper">
+    <div class="avatar-container">
+        <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}"
+             alt="Avatar">
+        {#            {{ dump(app.user.image) }} #}
+
+        {{ form_start(profileImageForm, {
+            attr: { class: 'profile-form' },
+            method: 'POST',
+            enctype: 'multipart/form-data',
+            action: path('app_profile_update_image')
+        }) }}
+        {{ form_row(profileImageForm.imageFile) }}
+        <button type="submit">Change my avatar</button>
+        {{ form_end(profileImageForm) }}
+    </div>
+
+    {{ form_start(updateProfileForm, { action: path('app_profile_update') }) }}
+    {{ form_row(updateProfileForm.firstName) }}
+    {{ form_row(updateProfileForm.lastName) }}
+    {{ form_row(updateProfileForm.mail) }}
+    {{ form_row(updateProfileForm.phoneNumber) }}
+    {{ form_row(updateProfileForm.pseudo) }}
+    {{ form_row(updateProfileForm.plainPassword) }}
+    {{ form_row(updateProfileForm.confirmPassword) }}
+
+    {{ form_row(updateProfileForm.campus) }}
+    {{ form_errors(updateProfileForm.plainPassword) }}
+
+
+    <button type="submit">Mettre à jour mes informations</button>
+    {{ form_end(updateProfileForm) }}
+
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        </div>
+    {% endfor %}
+
+
+    {% endblock %}
