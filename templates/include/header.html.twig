@@ -1,0 +1,27 @@
+<header>
+    <nav id="nav">
+        <div id="logo_titre">
+            <a id="nav-logo-link" href="{{ path('hangout_index') }}">
+                <img id="nav-logo" src="{{ asset('images/logoSortir.png') }}" alt="Logo de Sortir.com">
+            </a>
+
+            <div id="nav-title">
+                <a href="{{ path('hangout_index') }}">Sortir.com</a>
+            </div>
+        </div>
+        <div class="button-list">
+            {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <p class="nav-button"><a href="{{ path('hangout_index') }}">Ville</a></p>
+                    <p class="nav-button"><a href="{{ path('hangout_index') }}">Sites</a></p>
+                {% endif %}
+                <p class="nav-button"><a href="{{ path('hangout_index') }}">Accueil</a></p>
+                <p class="nav-button"><a href="{{ path('hangout_index') }}">Mon profil</a></p>
+                <p class="nav-button"><a href="{{ path('app_logout') }}">Se déconnecter</a></p>
+            {% else %}
+                {#                <p class="nav-button"><a href="{{ path('app_login') }}">Log in</a></p> #}
+                <p class="nav-button"><a href="{{ path('app_register') }}">Register</a></p>
+            {% endif %}
+        </div>
+    </nav>
+</header>

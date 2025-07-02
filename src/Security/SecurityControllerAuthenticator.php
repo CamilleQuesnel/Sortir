@@ -48,7 +48,7 @@ class SecurityControllerAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_main'));
+        return new RedirectResponse($this->urlGenerator->generate('hangout_index'));
     }
 
     protected function getLoginUrl(Request $request): string

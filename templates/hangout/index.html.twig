@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+ {% block title %}Hello HangoutController!{% endblock %}
+
+{% block body %}
+    <main id="hangout_main">
+        <div id="hangout_date">
+            <p>Date du jour : {{ "now"|date("d/m/Y") }}</p>
+            <p>Participant : {{ app.user.firstName|capitalize }} {{ app.user.lastName|first|capitalize }}.</p>
+        </div>
+        <div class="filters_and_results">
+            <section class="filters">
+                <div class="filters">
+                    {{ form_start(form) }}
+
+                    <div id="form_filters">
+                        <h3>Filtrer les sorties</h3>
+                        <div>
+                            {{ form_label(form.campus) }}
+                            {{ form_widget(form.campus) }}
+                        </div>
+                        <div>
+                            {{ form_label(form.outputNameContains) }}
+                            {{ form_widget(form.outputNameContains) }}
+                        </div>
+                        <div>
+                            {{ form_label(form.dateFrom) }}
+                            {{ form_widget(form.dateFrom) }}
+                            {{ form_label(form.dateTo) }}
+                            {{ form_widget(form.dateTo) }}
+                        </div>
+                    </div>
+                    <div id="form_select">
+                        <div>
+                            {{ form_widget(form.isOrganizer) }}
+                            {{ form_label(form.isOrganizer) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isRegistered) }}
+                            {{ form_label(form.isRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isNotRegistered) }}
+                            {{ form_label(form.isNotRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isPast) }}
+                            {{ form_label(form.isPast) }}
+                        </div>
+                    </div>
+
+                    <div id="btn-search">
+                        {{ form_row(form.search) }}
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </section>
+            <section class="results">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Nom de la sortie</th>
+                        <th>Date de la sortie</th>
+                        <th>Clôture</th>
+                        <th>Inscrits / places</th>
+                        <th>État</th>
+                        <th>Inscrit</th>
+                        <th>Organisateur</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for sortie in hangoutAll %}
+                        <tr>
+                            <td>{{ sortie.name }}</td>
+                            <td>{{ sortie.startingDate|date('d/m/Y H:i') }}</td>
+                            <td>{{ sortie.registrationDeadline|date('d/m/Y') }}</td>
+                            <td>{{ sortie.users|length }}/{{ sortie.nbInscriptionsMax }}</td>
+                            <td>{{ sortie.status.label }}</td>
+                            <td>
+                                {% if app.user in sortie.users %}
+                                    X
+                                {% endif %}
+                            </td>
+                            <td>{{ sortie.organizer.firstname }} {{ sortie.organizer.lastname }}</td>
+                            <td>
+                                {% if sortie.status.label == 'Created' and sortie.organizer == app.user %}
+                                    <a href="{{ path('hangout_edit', {'id': sortie.id}) }}">Modifier</a> -
+                                    <a href="{{ path('hangout_publish', {'id': sortie.id}) }}">Publier</a>
+                                {% elseif app.user in sortie.users %}
+                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a> -
+                                    <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}">Se désister</a>
+                                {% elseif sortie.status.label == 'Opened' %}
+                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a> -
+                                    <a href="{{ path('hangout_subscribe', {'id': sortie.id}) }}">S'inscrire</a>
+                                {% elseif sortie.status.label == 'In progress' %}
+                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a>
+                                {% else %}
+                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a>
+                                {% endif %}
+
+                                {# Bonus : Annuler possible si organisateur et statut = Ouvert #}
+                                {% if sortie.organizer == app.user and sortie.status.label == 'Ouvert' %}
+                                    - <a href="{{ path('hangout_cancel', {'id': sortie.id}) }}">Annuler</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8">Aucune sortie trouvée.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+{% endblock %}
+
+
