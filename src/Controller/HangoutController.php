@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\DTO\HangoutFilterDTO;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Form\CreateHangoutForm;
@@ -20,36 +19,25 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/hangout', name: 'hangout_')]
 final class HangoutController extends AbstractController
 {
-    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
+    #[Route('/', name: 'index')]
     public function index(
-        Request                $request,
-        HangoutRepository      $hangoutRepository,
-        CampusRepository       $campusRepository,
-        HangoutFilterService   $hangoutFilterService,
-        EntityManagerInterface $entityManager
+        Request           $request,
+        HangoutRepository $hangoutRepository,
     ): Response
     {
-        $hangout = new HangoutFilterDTO();
-        $form = $this->createForm(HangoutForm::class, $hangout);
+        $user = $this->getUser();
+        $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // selection du Campus
-
-            $hangoutFilterService->filterCampus($hangout->campus);
-
-
+            $filters = $form->getData();
         }
-        $hangoutAll = $hangoutRepository->findAll();
-        $campusALL = $campusRepository->findAll();
-
+        $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
 
         return $this->render('hangout/index.html.twig', [
-            'controller_name' => 'HangoutController',
-            'form' => $form,
-            'hangoutAll' => $hangoutAll,
-            'campusAll' => $campusALL,
-
+            'hangouts' => $hangouts,
+            'user' => $user,
+            'form' => $form->createView(),
         ]);
     }
 

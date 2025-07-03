@@ -2,12 +2,7 @@
 
 namespace App\Form;
 
-use App\DTO\HangoutFilterDTO;
 use App\Entity\Campus;
-use App\Entity\Hangout;
-use App\Entity\Spot;
-use App\Entity\Status;
-use App\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -73,16 +68,20 @@ class HangoutForm extends AbstractType
             ])
             ->add('search', SubmitType::class, [
                 'label' => 'Rechercher',
-                'attr' => ['class' => 'btn btn-primary']
-            ]);
-        ;
+                'attr' => [
+                    'class' => 'btn btn-primary',
+                ]
+            ])
+;
+
     }
 
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => HangoutFilterDTO::class,
+            'method' => 'GET',
+            'csrf_protection' => false,
         ]);
     }
 }
