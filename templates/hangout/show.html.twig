@@ -3,6 +3,31 @@
 {% block body %}
     <main>
 
+        <h1> Show hangout</h1>
+        Hangout's name : {{ hangout.name }}<br>
+
+        Event date and time : {{ hangout.startingDate |date('d/m/Y H:i') }}<br>
+        Registration deadline : {{ hangout.registrationDeadline |date('d/m/Y H:i') }}<br>
+        Available slots : {{ hangout.nbInscriptionsMax }}<br>
+
+        {#        converti les minutes en heures #}
+        {% set hours = hangout.duration // 60 %}
+        {% set minutes = hangout.duration % 60 %}
+        Duration : {{ hours }} h {{ minutes }} min <br>
+
+        Description and information : {{ hangout.description }}<br>
+        Status : {{ hangout.status.label }}<br>
+        Spot name : {{ hangout.spot.name }}<br>
+        Spot address : {{ hangout.spot.address }}<br>
+        City : {{ hangout.spot.city.name }}<br>
+        Zip code : {{ hangout.spot.city.zipCode }}<br>
+        Latitude : {{ hangout.spot.latitude }}<br>
+        Longitude : {{ hangout.spot.longitude }}<br>
+
+
+        <h2>List of subscribers</h2>
+
+
     </main>
 
 {% endblock %}

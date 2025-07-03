@@ -10,6 +10,7 @@ use App\Entity\User;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,27 +33,37 @@ class CreateHangoutForm extends AbstractType
                 'mapped' => false,
                 'data' => $options['user'] ? $options['user']->getPseudo() : '',
                 'disabled' => true,
-                'label' => 'Organisateur'
+                'label' => 'Organizer'
             ])
-            ->add('status', EntityType::class, [
-                'class' => Status::class,
-                'choice_label' => 'label',
+            ->add('save', SubmitType::class, [
+                'label' => 'Save',
+                'attr' => ['class' => 'btn btn-secondary']
             ])
+
+            ->add('publish', SubmitType::class, [
+                'label' => 'Publish hangout',
+                'attr' => ['class' => 'btn btn-primary']
+            ])
+
             ->add('spot', EntityType::class, [
                 'class' => Spot::class,
-                'choice_label' => 'name'
-            ])
-            ->add('campus', EntityType::class, [
-                'class' => Campus::class,
                 'choice_label' => 'name',
-            ]);
+                'placeholder' => 'Choose a spot',
+                'attr' => [
+                    'id' => 'spot-select'
+                ]
+            ])
+            ;
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Hangout::class,
+            'user' => null,
+            'csrf_protection' => true,
         ]);
-        $resolver->setDefined('user');
+
     }
 }

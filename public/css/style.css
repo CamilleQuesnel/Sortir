@@ -139,6 +139,20 @@ button {
     align-items: center;
     padding: 1rem 2rem;
 }
+#btn-spot-create {
+    background-color: #fff;
+    color: #1a1a1a;
+    border: #1a1a1a 1px solid;
+    padding: 0.25em 0.5em;
+    display: inline-block ;
+    font-size: 1.2em ;
+    font-weight: bold ;
+    text-decoration: none;
+}
+#btn-spot-create:hover {
+    background-color: #2980b9;
+}
+
 #btn-search {
     display: flex;
     justify-content: center;
