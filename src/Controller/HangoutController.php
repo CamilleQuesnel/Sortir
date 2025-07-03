@@ -2,19 +2,15 @@
 
 namespace App\Controller;
 
-use App\DTO\HangoutFilterDTO;
 use App\Entity\Hangout;
 use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
 use App\Repository\CampusRepository;
 use App\Repository\HangoutRepository;
-use App\Service\HangoutFilterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/hangout', name: 'hangout_')]
@@ -30,14 +26,9 @@ final class HangoutController extends AbstractController
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
-
-        $filters = $form->getData();
-
         if ($form->isSubmitted() && $form->isValid()) {
             $filters = $form->getData();
         }
-        dump($user);
-
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
 
         return $this->render('hangout/index.html.twig', [

@@ -2,12 +2,7 @@
 
 namespace App\Form;
 
-use App\DTO\HangoutFilterDTO;
 use App\Entity\Campus;
-use App\Entity\Hangout;
-use App\Entity\Spot;
-use App\Entity\Status;
-use App\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

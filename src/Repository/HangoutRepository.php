@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\DTO\HangoutFilterDTO;
+
 use App\Entity\Hangout;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -18,21 +18,19 @@ class HangoutRepository extends ServiceEntityRepository
         parent::__construct($registry, Hangout::class);
     }
 
-    public function findByFilters( ?User $user, ?array $filters): array
+    public function findByFilters(?User $user, ?array $filters): array
 
     {
-
         $qb = $this->createQueryBuilder('h')
             ->leftJoin('h.campus', 'c')
             ->leftJoin('h.users', 'u')
-            ->addSelect('c','u');
-//            ->orderBy('h.startingDate', 'ASC');
+            ->addSelect('c', 'u')
+            ->orderBy('h.startingDate', 'ASC');
 
-            if (!empty($filters['campus'])) {
-                $qb->andWhere('h.campus = :campus')
-                ->setParameter('campus', $filters['campus'] );
-            }
-
+        if (!empty($filters['campus'])) {
+            $qb->andWhere('h.campus = :campus')
+                ->setParameter('campus', $filters['campus']);
+        }
 
         if (!empty($filters['outputNameContains'])) {
             $qb->andWhere('h.name LIKE :name')
@@ -54,21 +52,20 @@ class HangoutRepository extends ServiceEntityRepository
                 ->setParameter('now', new \DateTime());
         }
 
-        if (!empty($filters['isOrganizer'] )&& $user) {
+        if (!empty($filters['isOrganizer']) && $user) {
             $qb->andWhere('h.organizer = :user')
                 ->setParameter('user', $user);
         }
 
-        if (!empty($filters['isRegistered'] )&& $user) {
+        if (!empty($filters['isRegistered']) && $user) {
             $qb->andWhere(':user MEMBER OF h.users')
                 ->setParameter('user', $user);
         }
 
-        if (!empty($filters['isNotRegistered'] )&& $user) {
+        if (!empty($filters['isNotRegistered']) && $user) {
             $qb->andWhere(':user NOT MEMBER OF h.users')
                 ->setParameter('user', $user);
         }
-
         return $qb->getQuery()->getResult();
     }
 }
