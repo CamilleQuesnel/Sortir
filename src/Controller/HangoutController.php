@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DTO\HangoutFilterDTO;
 use App\Entity\Hangout;
+use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
 use App\Repository\CampusRepository;
 use App\Repository\HangoutRepository;
@@ -51,24 +52,26 @@ final class HangoutController extends AbstractController
         }
 
 
-    #[Route('/{id}', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(
-        Request           $request,
-        HangoutRepository $hangoutRepository,
-        CampusRepository  $campusRepository,
-    ): Response
-    {
-        return $this->render('hangout/edit.html.twig', []);
-    }
 
-    #[Route('/{id}', name: 'publish', methods: ['GET', 'Post'])]
+    #[Route('/publish', name: 'publish', methods: ['GET', 'POST'])]
     public function publish(
         Request           $request,
-        HangoutRepository $hangoutRepository,
-        CampusRepository  $campusRepository,
+        EntityManagerInterface $entityManager
     ): Response
     {
-        return $this->render('hangout/publish.html.twig', []);
+        $hangout = new Hangout();
+        $createHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout, [ 'user' => $this->getUser(),]);
+
+        $createHangoutForm->handleRequest($request);
+        if ($createHangoutForm->isSubmitted() && $createHangoutForm->isValid()) {
+            $hangout->setOrganizer($this->getUser());
+
+            $entityManager->persist($hangout);
+            $entityManager->flush();
+            return $this->redirectToRoute('hangout_index');
+        }
+
+        return $this->render('hangout/publish.html.twig', ['createHangoutForm'=>$createHangoutForm->createView()]);
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET', 'Post'])]
@@ -101,5 +104,14 @@ final class HangoutController extends AbstractController
         return $this->render('hangout/subscribe.html.twig', []);
     }
 
+    #[Route('/{id}', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request           $request,
+        HangoutRepository $hangoutRepository,
+        CampusRepository  $campusRepository,
+    ): Response
+    {
+        return $this->render('hangout/edit.html.twig', []);
+    }
 
 }
