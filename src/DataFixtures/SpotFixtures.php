@@ -21,8 +21,8 @@ class SpotFixtures extends Fixture implements DependentFixtureInterface
             $spot = new Spot();
             $spot->setName('Lieu ' . $faker->word());
             $spot->setAddress($faker->address());
-            $spot->setLatitude($faker->latitude());
-            $spot->setLongitude($faker->longitude());
+            $spot->setLatitude((string) ($faker->latitude()));
+            $spot->setLongitude((string) ($faker->longitude()));
 
             // Associer à une City existante (par index aléatoire de 0 à 4)
             $cityIndex = rand(0, 4);

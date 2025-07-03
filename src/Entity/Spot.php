@@ -22,10 +22,10 @@ class Spot
     private ?string $address = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $latitude = null;
+    private ?string $latitude = null;
 
     #[ORM\Column(nullable: true)]
-    private ?float $longitude = null;
+    private ?string $longitude = null;
 
     /**
      * @var Collection<int, Hangout>
@@ -71,24 +71,24 @@ class Spot
         return $this;
     }
 
-    public function getLatitude(): ?float
+    public function getLatitude(): ?string
     {
         return $this->latitude;
     }
 
-    public function setLatitude(?float $latitude): static
+    public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
 
         return $this;
     }
 
-    public function getLongitude(): ?float
+    public function getLongitude(): ?string
     {
         return $this->longitude;
     }
 
-    public function setLongitude(?float $longitude): static
+    public function setLongitude(?string $longitude): static
     {
         $this->longitude = $longitude;
 

@@ -26,7 +26,7 @@ class Hangout
     private ?\DateTime $registrationDeadline = null;
 
     #[ORM\Column]
-    private ?\DateTime $duration = null;
+    private ?int $duration = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
@@ -102,12 +102,12 @@ class Hangout
         return $this;
     }
 
-    public function getDuration(): ?\DateTime
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateTime $duration): static
+    public function setDuration(int $duration): static
     {
         $this->duration = $duration;
 

@@ -24,7 +24,7 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             // Dates réalistes
             $startDate = $faker->dateTimeBetween('+1 days', '+1 month');
             $deadline = (clone $startDate)->modify('-2 days');
-            $duration = (clone $startDate)->modify('+2 hours');
+            $duration = rand((1*60),(8*60));
 
             $hangout->setStartingDate($startDate);
             $hangout->setRegistrationDeadline($deadline);

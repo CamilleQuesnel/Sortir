@@ -10,6 +10,7 @@
         </div>
         <div class="filters_and_results">
             <section class="filters">
+
                 <div class="filters">
                     {{ form_start(form) }}
 
@@ -67,11 +68,14 @@
                         <th>État</th>
                         <th>Inscrit</th>
                         <th>Organisateur</th>
+                        <th>Campus</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-
+{#                    {% if request_method == 'POST' %}#}
+{#                        {{ dump(hangoutAll) }}#}
+{#                    {% endif %}#}
                     {% for sortie in hangoutAll %}
                         <tr>
                             <td>{{ sortie.name }}</td>
@@ -85,6 +89,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ sortie.organizer.firstname }} {{ sortie.organizer.lastname }}</td>
+                            <td>{{ sortie.campus }}</td>
                             <td>
                                 {% if sortie.status.label == 'Created' and sortie.organizer == app.user %}
                                     <a href="{{ path('hangout_edit', {'id': sortie.id}) }}">Modifier</a> -

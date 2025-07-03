@@ -19,36 +19,41 @@ final class HangoutController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
-        Request           $request,
-        HangoutRepository $hangoutRepository,
-        CampusRepository  $campusRepository,
-        HangoutFilterService  $hangoutFilterService,
-        EntityManagerInterface  $entityManager
+        Request                $request,
+        HangoutRepository      $hangoutRepository,
+        CampusRepository       $campusRepository,
+        HangoutFilterService   $hangoutFilterService,
+        EntityManagerInterface $entityManager
     ): Response
     {
         $hangout = new HangoutFilterDTO();
         $form = $this->createForm(HangoutForm::class, $hangout);
         $form->handleRequest($request);
 
+        $filters = $form->getData();
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // selection du Campus
-
-            $hangoutFilterService->filterCampus($hangout->campus);
-
-
-        }
+            $user = $this->getUser();
+            $hangoutAll = $hangoutFilterService->filterHangouts($hangout, $user);
+//            dd($hangoutAll);
+        } else {
             $hangoutAll = $hangoutRepository->findAll();
-            $campusALL = $campusRepository->findAll();
-
-
-            return $this->render('hangout/index.html.twig', [
-                'controller_name' => 'HangoutController',
-                'form' => $form,
-                'hangoutAll' => $hangoutAll,
-                'campusAll' => $campusALL,
-
-            ]);
         }
+
+
+//        if($request->getMethod() === 'POST'){
+//            dd($hangoutAll);
+//        }
+
+        return $this->render('hangout/index.html.twig', [
+            'controller_name' => 'HangoutController',
+            'form' => $form->createView(),
+            'hangoutAll' => $hangoutAll,
+            'request_method' => $request->getMethod(),
+
+
+        ]);
+    }
 
 
     #[Route('/{id}', name: 'edit', methods: ['GET', 'POST'])]
