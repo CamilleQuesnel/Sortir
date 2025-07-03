@@ -1,12 +1,88 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<main>
-<h1>RGRKLG?KZG?</h1>
-    {{ form_start(createHangoutForm) }}
+    <main>
+        <h1>Create an Hangout</h1>
+        <div class="content">
+            <div class="hangout">
 
-    {{ form_end(createHangoutForm) }}
 
-</main>
+                {{ form_start(createHangoutForm) }}
+                {{ form_row(createHangoutForm.name) }}<br>
+                {{ form_row(createHangoutForm.startingDate) }}<br>
+                {{ form_row(createHangoutForm.registrationDeadline) }}<br>
+                {{ form_row(createHangoutForm.duration) }}<br>
+                {{ form_row(createHangoutForm.nbInscriptionsMax) }}<br>
+                {{ form_row(createHangoutForm.description) }}<br>
+                {{ form_row(createHangoutForm.organizer) }}
+
+
+                <div class="spot-select">
+                    {{ form_row(createHangoutForm.spot) }} or
+
+                    <a href="{{ path('spot_create') }}" id="btn-spot-create">+</a>
+
+                </div>
+                <div class="city-hangout">
+
+                </div>
+                <div class="spot-hangout">
+                    <div id="spot-info">
+                        <p>Address : <span id="spot-address"></span></p>
+                        <p>Latitude : <span id="spot-lat"></span></p>
+                        <p>Longitude : <span id="spot-lng"></span></p>
+                        <p>Zip Code : <span id="spot-zip-code"></span></p>
+                        <p>City : <span id="spot-city"></span></p>
+                    </div>
+
+
+                    {#                script js pour afficher dynamiquement les adresses du spot #}
+                    <script>
+                        const spotSelect = document.getElementById("{{ createHangoutForm.spot.vars.id }}");
+                        const spotInfoDiv = document.getElementById("spot-info");
+                        const spotAddressSpan = document.getElementById("spot-address");
+                        const spotLatSpan = document.getElementById("spot-lat");
+                        const spotLngSpan = document.getElementById("spot-lng");
+                        const spotZipCodeSpan = document.getElementById("spot-zip-code");
+                        const spotCitySpan = document.getElementById("spot-city");
+
+                        // Liste des spots avec leurs infos (rendu côté client)
+                        const spotsData = {
+                            {% for spot in spots %}
+                            "{{ spot.id }}": {
+                                "address": "{{ spot.address|e('js') }}",
+                                "lat": "{{ spot.latitude }}",
+                                "lng": "{{ spot.longitude }}",
+                                "zipCode": "{{ spot.city.zipCode }}",
+                                "city": "{{ spot.city.name }}"
+                            }{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        };
+
+                        spotSelect.addEventListener("change", function () {
+                            const selectedId = this.value;
+                            const data = spotsData[selectedId];
+
+                            if (data) {
+                                spotAddressSpan.textContent = data.address;
+                                spotLatSpan.textContent = data.lat;
+                                spotLngSpan.textContent = data.lng;
+                                spotZipCodeSpan.textContent = data.zipCode;
+                                spotCitySpan.textContent = data.city;
+                                spotInfoDiv.style.display = "block";
+                            } else {
+                                spotInfoDiv.style.display = "none";
+                            }
+                        });
+                    </script>
+
+                </div>
+
+                {{ form_widget(createHangoutForm.publish) }}
+
+                {{ form_end(createHangoutForm) }}
+            </div>
+
+    </main>
 {% endblock %}
 
