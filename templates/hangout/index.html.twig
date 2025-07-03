@@ -13,7 +13,6 @@
 
                 <div class="filters">
                     {{ form_start(form) }}
-
                     <div id="form_filters">
                         <h3>Filtrer les sorties</h3>
                         <div>
@@ -74,9 +73,9 @@
                     </thead>
                     <tbody>
 {#                    {% if request_method == 'POST' %}#}
-{#                        {{ dump(hangoutAll) }}#}
+{#                        {{ dump(hangouts) }}#}
 {#                    {% endif %}#}
-                    {% for sortie in hangoutAll %}
+                    {% for sortie in hangouts %}
                         <tr>
                             <td>{{ sortie.name }}</td>
                             <td>{{ sortie.startingDate|date('d/m/Y H:i') }}</td>

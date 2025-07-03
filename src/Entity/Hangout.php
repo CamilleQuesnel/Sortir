@@ -37,7 +37,7 @@ class Hangout
     /**
      * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'hangout')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'hangout')]
     private Collection $users;
 
     #[ORM\ManyToOne(inversedBy: 'organizer')]

@@ -11,56 +11,51 @@ use App\Repository\HangoutRepository;
 use App\Service\HangoutFilterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/hangout', name: 'hangout_')]
 final class HangoutController extends AbstractController
 {
-    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
+    #[Route('/', name: 'index')]
     public function index(
         Request           $request,
         HangoutRepository $hangoutRepository,
-        CampusRepository  $campusRepository,
-        HangoutFilterService  $hangoutFilterService,
-        EntityManagerInterface  $entityManager
     ): Response
     {
-        $hangout = new HangoutFilterDTO();
-        $form = $this->createForm(HangoutForm::class, $hangout);
+        $user = $this->getUser();
+        $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
+
+        $filters = $form->getData();
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // selection du Campus
-
-            $hangoutFilterService->filterCampus($hangout->campus);
-
-
+            $filters = $form->getData();
         }
-            $hangoutAll = $hangoutRepository->findAll();
-            $campusALL = $campusRepository->findAll();
+        dump($user);
 
+        $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
 
-            return $this->render('hangout/index.html.twig', [
-                'controller_name' => 'HangoutController',
-                'form' => $form,
-                'hangoutAll' => $hangoutAll,
-                'campusAll' => $campusALL,
-
-            ]);
-        }
-
+        return $this->render('hangout/index.html.twig', [
+            'hangouts' => $hangouts,
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
 
 
     #[Route('/publish', name: 'publish', methods: ['GET', 'POST'])]
     public function publish(
-        Request           $request,
+        Request                $request,
         EntityManagerInterface $entityManager
     ): Response
     {
         $hangout = new Hangout();
-        $createHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout, [ 'user' => $this->getUser(),]);
+        $createHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout, ['user' => $this->getUser(),]);
 
         $createHangoutForm->handleRequest($request);
         if ($createHangoutForm->isSubmitted() && $createHangoutForm->isValid()) {
@@ -71,7 +66,7 @@ final class HangoutController extends AbstractController
             return $this->redirectToRoute('hangout_index');
         }
 
-        return $this->render('hangout/publish.html.twig', ['createHangoutForm'=>$createHangoutForm->createView()]);
+        return $this->render('hangout/publish.html.twig', ['createHangoutForm' => $createHangoutForm->createView()]);
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET', 'Post'])]

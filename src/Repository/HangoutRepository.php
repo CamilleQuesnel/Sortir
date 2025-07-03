@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\HangoutFilterDTO;
 use App\Entity\Hangout;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,62 +18,57 @@ class HangoutRepository extends ServiceEntityRepository
         parent::__construct($registry, Hangout::class);
     }
 
-    public function findByFilters(HangoutFilterDTO $filters, $user)
+    public function findByFilters( ?User $user, ?array $filters): array
+
     {
 
-        $qb = $this->createQueryBuilder('h');
+        $qb = $this->createQueryBuilder('h')
+            ->leftJoin('h.campus', 'c')
+            ->leftJoin('h.users', 'u')
+            ->addSelect('c','u');
+//            ->orderBy('h.startingDate', 'ASC');
 
-            //test campus
-            if ($filters->getCampus() !== null) {
+            if (!empty($filters['campus'])) {
                 $qb->andWhere('h.campus = :campus')
-                    ->setParameter('campus', $filters->getCampus());
+                ->setParameter('campus', $filters['campus'] );
             }
 
-//            ->leftJoin('h.campus', 'c')
-//            ->leftJoin('h.participants', 'p')
-//            ->where('1=1'); // base pour ajouter des conditions
-//
-//        if ($filters->getCampus()) {
-//            $qb->andWhere('h.campus = :campus')
-//                ->setParameter('campus', $filters->getCampus());
-//        }
-//
-//        if ($filters->getOutputNameContains()) {
-//            $qb->andWhere('h.name LIKE :name')
-//                ->setParameter('name', '%' . $filters->getOutputNameContains() . '%');
-//        }
-//
-//        if ($filters->getDateFrom()) {
-//            $qb->andWhere('h.dateStart >= :dateFrom')
-//                ->setParameter('dateFrom', $filters->getDateFrom());
-//        }
-//
-//        if ($filters->getDateTo()) {
-//            $qb->andWhere('h.dateStart <= :dateTo')
-//                ->setParameter('dateTo', $filters->getDateTo());
-//        }
-//
-//        if ($filters->isPast()) {
-//            $qb->andWhere('h.dateStart < :now')
-//                ->setParameter('now', new \DateTime());
-//        }
-//
-//        if ($filters->isOrganizer()) {
-//            $qb->andWhere('h.organizer = :user')
-//                ->setParameter('user', $user);
-//        }
-//
-//        if ($filters->isRegistered()) {
-//            $qb->andWhere(':user MEMBER OF h.participants')
-//                ->setParameter('user', $user);
-//        }
-//
-//        if ($filters->isNotRegistered()) {
-//            $qb->andWhere(':user NOT MEMBER OF h.participants')
-//                ->setParameter('user', $user);
-//        }
+
+        if (!empty($filters['outputNameContains'])) {
+            $qb->andWhere('h.name LIKE :name')
+                ->setParameter('name', '%' . $filters['outputNameContains'] . '%');
+        }
+
+        if (!empty($filters['dateFrom'])) {
+            $qb->andWhere('h.startingDate >= :dateFrom')
+                ->setParameter('dateFrom', $filters['dateFrom']);
+        }
+
+        if (!empty($filters['dateTo'])) {
+            $qb->andWhere('h.startingDate <= :dateTo')
+                ->setParameter('dateTo', $filters['dateTo']);
+        }
+
+        if (!empty($filters['isPast'])) {
+            $qb->andWhere('h.startingDate < :now')
+                ->setParameter('now', new \DateTime());
+        }
+
+        if (!empty($filters['isOrganizer'] )&& $user) {
+            $qb->andWhere('h.organizer = :user')
+                ->setParameter('user', $user);
+        }
+
+        if (!empty($filters['isRegistered'] )&& $user) {
+            $qb->andWhere(':user MEMBER OF h.users')
+                ->setParameter('user', $user);
+        }
+
+        if (!empty($filters['isNotRegistered'] )&& $user) {
+            $qb->andWhere(':user NOT MEMBER OF h.users')
+                ->setParameter('user', $user);
+        }
 
         return $qb->getQuery()->getResult();
     }
-
 }

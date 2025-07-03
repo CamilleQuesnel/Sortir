@@ -73,16 +73,20 @@ class HangoutForm extends AbstractType
             ])
             ->add('search', SubmitType::class, [
                 'label' => 'Rechercher',
-                'attr' => ['class' => 'btn btn-primary']
-            ]);
-        ;
+                'attr' => [
+                    'class' => 'btn btn-primary',
+                ]
+            ])
+;
+
     }
 
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => HangoutFilterDTO::class,
+            'method' => 'GET',
+            'csrf_protection' => false,
         ]);
     }
 }
