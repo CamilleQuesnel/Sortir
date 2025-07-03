@@ -17,7 +17,7 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             $hangout = new Hangout();
             $hangout->setName($faker->catchPhrase());
 

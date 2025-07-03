@@ -26,7 +26,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        for ($i = 0; $i < 150; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $user = new User();
             $user->setPseudo($faker->unique()->userName());
             $user->setFirstName($faker->firstName());

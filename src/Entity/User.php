@@ -118,7 +118,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Hangout>
      */
-    #[ORM\ManyToMany(targetEntity: Hangout::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Hangout::class, mappedBy: 'users')]
     private Collection $hangout;
 
     /**
