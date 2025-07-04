@@ -94,15 +94,15 @@
                                     <a href="{{ path('hangout_edit', {'id': sortie.id}) }}">Modifier</a> -
                                     <a href="{{ path('hangout_publish', {'id': sortie.id}) }}">Publier</a>
                                 {% elseif app.user in sortie.users %}
-                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a> -
+                                    <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Afficher</a> -
                                     <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}">Se désister</a>
                                 {% elseif sortie.status.label == 'Opened' %}
-                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a> -
+                                    <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Afficher</a> -
                                     <a href="{{ path('hangout_subscribe', {'id': sortie.id}) }}">S'inscrire</a>
                                 {% elseif sortie.status.label == 'In progress' %}
-                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a>
+                                    <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Afficher</a>
                                 {% else %}
-                                    <a href="{{ path('hangout_show', {'id': sortie.id}) }}">Afficher</a>
+                                    <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Afficher</a>
                                 {% endif %}
 
                                 {# Bonus : Annuler possible si organisateur et statut = Ouvert #}

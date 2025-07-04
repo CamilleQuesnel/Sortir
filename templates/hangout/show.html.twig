@@ -4,30 +4,51 @@
     <main>
 
         <h1> Show hangout</h1>
-        Hangout's name : {{ hangout.name }}<br>
+        Nom de la sortie : {{ hangout.name }}<br>
 
-        Event date and time : {{ hangout.startingDate |date('d/m/Y H:i') }}<br>
-        Registration deadline : {{ hangout.registrationDeadline |date('d/m/Y H:i') }}<br>
-        Available slots : {{ hangout.nbInscriptionsMax }}<br>
+        Date et heure de la sortie : {{ hangout.startingDate |date('d/m/Y H:i') }}<br>
+        Date limite d'inscription : {{ hangout.registrationDeadline |date('d/m/Y H:i') }}<br>
+        Nombre de places :  : {{ hangout.nbInscriptionsMax }}<br>
 
         {#        converti les minutes en heures #}
         {% set hours = hangout.duration // 60 %}
         {% set minutes = hangout.duration % 60 %}
-        Duration : {{ hours }} h {{ minutes }} min <br>
+        Durée : {{ hours }} h {{ minutes }} min <br>
 
-        Description and information : {{ hangout.description }}<br>
-        Status : {{ hangout.status.label }}<br>
-        Spot name : {{ hangout.spot.name }}<br>
-        Spot address : {{ hangout.spot.address }}<br>
-        City : {{ hangout.spot.city.name }}<br>
-        Zip code : {{ hangout.spot.city.zipCode }}<br>
+        Description et infos : {{ hangout.description }}<br>
+{#        Status : {{ hangout.status.label }}<br>#}
+        Lieu : {{ hangout.spot.name }}<br>
+        Rue : {{ hangout.spot.address }}<br>
+        Ville : {{ hangout.spot.city.name }}<br>
+        Code postal : {{ hangout.spot.city.zipCode }}<br>
         Latitude : {{ hangout.spot.latitude }}<br>
         Longitude : {{ hangout.spot.longitude }}<br>
 
 
-        <h2>List of subscribers</h2>
+        <h2>Liste des participants inscrits :</h2>
+        <section class="results">
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Pseudo</th>
+                <th>Nom</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.pseudo }}</a></td>
 
-
+                    <td><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.firstname }} {{ user.lastname }}</a></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">Aucun participant</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </section>
     </main>
 
 {% endblock %}
