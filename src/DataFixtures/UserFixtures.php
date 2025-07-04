@@ -28,15 +28,35 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 0; $i < 20; $i++) {
             $user = new User();
-            $user->setPseudo($faker->unique()->userName());
-            $user->setFirstName($faker->firstName());
-            $user->setLastName($faker->lastName());
-            $user->setMail($faker->unique()->email());
-            $user->setPhoneNumber($faker->phoneNumber());
-            $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
-            $user->setAdmin($i === 0); // Le 1er est admin
-            $user->setActive($faker->boolean());
-
+            if ($i == 0) {
+                $user->setPseudo('Seb');
+                $user->setFirstName('Sébastien');
+                $user->setLastName('Fischer');
+                $user->setMail('sebastienfischer@hotmail.fr');
+                $user->setPhoneNumber('0768983096');
+                $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
+                $user->setAdmin(1); // Le 1er est admin
+                $user->setActive(1);
+            }
+            if ($i == 1) {
+                $user->setPseudo('User');
+                $user->setFirstName('User');
+                $user->setLastName('User');
+                $user->setMail('user@user.user');
+                $user->setPhoneNumber('0102030405');
+                $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
+                $user->setAdmin(1); // Le 1er est admin
+                $user->setActive(1);
+            } else {
+                $user->setPseudo($faker->unique()->userName());
+                $user->setFirstName($faker->firstName());
+                $user->setLastName($faker->lastName());
+                $user->setMail($faker->unique()->email());
+                $user->setPhoneNumber($faker->phoneNumber());
+                $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
+                $user->setAdmin(0); // Le 1er est admin
+                $user->setActive($faker->boolean());
+            }
             // Hasher le mot de passe
             $password = $this->hasher->hashPassword($user, 'password');
             $user->setPassword($password);
@@ -49,7 +69,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $campusIndex = rand(0, $campusCount - 1);
             $campusReference = CampusFixtures::CAMPUS_REFERENCE_PREFIX . $campusIndex;
 
-            $campusEntity = $this->getReference($campusReference,Campus::class);
+            $campusEntity = $this->getReference($campusReference, Campus::class);
 
             $user->setCampus($campusEntity);
 
