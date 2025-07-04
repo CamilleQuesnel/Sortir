@@ -3,67 +3,7 @@
 {% block title %}Mon profil{% endblock %}
 
 {% block body %}
-<style>
-    .form-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 2rem;
-    padding: 2rem;
-    font-family: Arial, sans-serif;
-    }
 
-    .avatar-container img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border: 1px solid black;
-    border-radius: 5px;
-    }
-
-    form.profile-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 350px;
-    }
-
-    form.profile-form label {
-    display: block;
-    font-weight: normal;
-    margin-bottom: 0.2rem;
-    }
-
-    form.profile-form input,
-    form.profile-form select {
-    width: 100%;
-    padding: 0.4rem;
-    border: 1px solid black;
-    }
-
-    .form-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.5rem;
-    }
-
-    .form-buttons button {
-    padding: 0.6rem 1.5rem;
-    border: 1px solid black;
-    background: white;
-    cursor: pointer;
-    }
-
-    .form-buttons button:hover {
-    background-color: #eee;
-    }
-
-    h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    }
-
-</style>
     <h1>My profile - {{ user.pseudo | capitalize }}</h1>
 
     <div class="form-wrapper">
