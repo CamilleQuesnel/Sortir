@@ -11,12 +11,13 @@ class StatusFixtures extends Fixture
     public const STATUS_REFERENCE_PREFIX = 'status_';
 
     public static array $statuss = [
-        'Created',
-        'Opened',
-        'Closed',
-        'In progress',
-        'Past',
-        'Canceled',
+        'Créée',
+        'Ouverte',
+        'Fermée',
+        'En cours',
+        'Passée',
+        'Annulée',
+        'Archivée'
     ];
 
     public function load(ObjectManager $manager): void

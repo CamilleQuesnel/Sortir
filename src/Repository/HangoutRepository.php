@@ -68,4 +68,6 @@ class HangoutRepository extends ServiceEntityRepository
         }
         return $qb->getQuery()->getResult();
     }
+
+
 }

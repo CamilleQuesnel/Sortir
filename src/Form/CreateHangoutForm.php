@@ -35,6 +35,14 @@ class CreateHangoutForm extends AbstractType
                 'disabled' => true,
                 'label' => 'Organizer'
             ])
+            ->add('spot', EntityType::class, [
+                'class' => Spot::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Choose a spot',
+                'attr' => [
+                    'id' => 'spot-select'
+                ]
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-secondary']
@@ -45,14 +53,7 @@ class CreateHangoutForm extends AbstractType
                 'attr' => ['class' => 'btn btn-primary']
             ])
 
-            ->add('spot', EntityType::class, [
-                'class' => Spot::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Choose a spot',
-                'attr' => [
-                    'id' => 'spot-select'
-                ]
-            ])
+
             ;
 
     }
