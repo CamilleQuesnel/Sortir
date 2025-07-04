@@ -96,12 +96,12 @@
                                 {% if sortie.status.label == 'Créée' and sortie.organizer == app.user %}
                                     <a href="{{ path('hangout_update', {'id': sortie.id}) }}">Modifier</a> -
                                     <a href="{{ path('hangout_publish', {'id': sortie.id}) }}">Publier</a> -
-                                    <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Annuler</a>
+                                    <a href="{{ path('hangout_delete', {'id': sortie.id}) }}">Annuler</a>
 
                                 {% elseif sortie.status.label == 'Ouverte' %}
                                     {% if sortie.organizer == app.user %}
                                         <a href="{{ path('hangout_update', {'id': sortie.id}) }}">Modifier</a> -
-                                        <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Annuler</a>
+                                        <a href="{{ path('hangout_delete', {'id': sortie.id}) }}">Annuler</a>
                                     {% endif %}
 
                                     {% if app.user in sortie.users %}
@@ -115,7 +115,7 @@
                                         <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"> - Se désister</a>
                                     {% endif %}
                                     {% if sortie.organizer == app.user %}
-                                        <a href="{{ path('hangout_details', {'id': sortie.id}) }}">Annuler</a>
+                                        <a href="{{ path('hangout_delete', {'id': sortie.id}) }}">Annuler</a>
                                     {% endif %}
 
                                 {% elseif sortie.status.label == 'En cours' %}
@@ -137,7 +137,9 @@
                         </tbody>
                     </table>
                 </section>
+
                 <a href="{{ path('hangout_publish') }}"><button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button></a>
+
             </div>
         </div>
 

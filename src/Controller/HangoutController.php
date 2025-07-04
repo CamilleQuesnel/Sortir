@@ -255,6 +255,50 @@ final class HangoutController extends AbstractController
 
     }
 
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET', 'POST'])]
+    public function delete(
+        int $id,
+        EntityManagerInterface $entityManager,
+        HangoutRepository $hangoutRepository,
+        StatusRepository $statusRepository
+    ): Response {
+        $hangout = $hangoutRepository->find($id);
+
+        if (!$hangout) {
+            $this->addFlash('danger', 'Sortie introuvable.');
+            return $this->redirectToRoute('hangout_index');
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            $this->addFlash('warning', 'Vous devez être connecté pour annuler une sortie.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        if ($hangout->getOrganizer() !== $user) {
+            $this->addFlash('danger', 'Vous n\'êtes pas autorisé à annuler cette sortie.');
+            return $this->redirectToRoute('hangout_details', ['id' => $id]);
+        }
+
+        // Récupérer le statut "Annulée"
+        $statusAnnulee = $statusRepository->findOneBy(['label' => 'Annulée']);
+
+        if (!$statusAnnulee) {
+            $this->addFlash('danger', 'Le statut "Annulée" est introuvable.');
+            return $this->redirectToRoute('hangout_index');
+        }
+
+        // Changer le statut
+        $hangout->setStatus($statusAnnulee);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Sortie annulée avec succès.');
+        return $this->redirectToRoute('hangout_index');
+    }
+
+
+
     #[Route('/{id}/update', name: 'update', methods: ['GET', 'POST'])]
     public function edit(
         int                    $id,
@@ -268,11 +312,13 @@ final class HangoutController extends AbstractController
 
         $dto = new UpdateHangoutDTO();
 
+
         $hangout = $hangoutRepository->find($id);
         $spot = $spotRepository->find($hangout->getSpot()->getId());
 //        $city = $cityRepository->find($spot->getCity()->getId());
         $dto->hangout = $hangout;
         $dto->spot = $spot;
+
 
         $isOrganizer = $this->getUser()->getUserIdentifier() === $hangout->getOrganizer()->getUserIdentifier();
 
