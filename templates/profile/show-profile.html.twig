@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+
+    <h1>My profile - {{ user.pseudo | capitalize }}</h1>
+
+    <div class="form-wrapper">
+        <div class="avatar-container">
+            <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
+{#            {{ dump(app.user.image) }}#}
+
+{{ app.user.image }}
+
+        </div>
+
+        <div>
+
+            <p>Firstname : {{ user.firstName | capitalize}}</p>
+            <p>Lastname : {{ user.lastName | capitalize}}</p>
+            <p>Email : {{ user.mail }}</p>
+            <p>Phone Number : {{ user.phoneNumber }}</p>
+            <p>Campus : {{ user.campus.name }}</p>
+
+        </div>
+    </div>
+{% endblock %}
