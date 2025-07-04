@@ -2,19 +2,18 @@
 
 namespace App\Controller;
 
+use App\DTO\UpdateHangoutDTO;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Entity\User;
 use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
 use App\Form\SpotForm;
-use App\Repository\CampusRepository;
+use App\Form\UpdateHangoutForm;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
 use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
-use App\Repository\UserRepository;
-use App\Service\HangoutFilterService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Metadata\Exception;
@@ -26,11 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/hangout', name: 'hangout_')]
 final class HangoutController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
         Request           $request,
         HangoutRepository $hangoutRepository,
-        StatusRepository $statusRepository,
+        StatusRepository  $statusRepository,
     ): Response
     {
         $user = $this->getUser();
@@ -133,9 +132,9 @@ final class HangoutController extends AbstractController
 
     #[Route('/{id}/list_users', name: 'list_users', methods: ['GET'])]
     public function listUsers(
-        int $id,
+        int               $id,
         HangoutRepository $hangoutRepository,
-    ) :Response
+    ): Response
     {
         $hangout = $hangoutRepository->find($id);
         if (!$hangout) {
@@ -150,10 +149,11 @@ final class HangoutController extends AbstractController
 
     #[Route('/{id}/unsubscribe', name: 'unsubscribe', methods: ['GET', 'POST'])]
     public function unsubscribe(
-        int $id,
-        HangoutRepository $hangoutRepository,
+        int                    $id,
+        HangoutRepository      $hangoutRepository,
         EntityManagerInterface $entityManager
-    ): Response {
+    ): Response
+    {
         $hangout = $hangoutRepository->find($id);
 
         if (!$hangout) {
@@ -183,7 +183,7 @@ final class HangoutController extends AbstractController
 
         // Vérifier que la sortie n’est pas annulée, supprimée, ou en cours
         $status = $hangout->getStatus()->getLabel();
-        if (in_array(strtolower($status), [ 'En cours', 'Annulée', 'Archivée'])) {
+        if (in_array(strtolower($status), ['En cours', 'Annulée', 'Archivée'])) {
             $this->addFlash('warning', 'Vous ne pouvez pas vous désinscrire de cette sortie.');
             return $this->redirectToRoute('hangout_details', ['id' => $id]);
         }
@@ -201,8 +201,8 @@ final class HangoutController extends AbstractController
 
     #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'Post'])]
     public function subscribe(
-        int $id,
-        HangoutRepository $hangoutRepository,
+        int                    $id,
+        HangoutRepository      $hangoutRepository,
         EntityManagerInterface $entityManager,
     ): Response
     {
@@ -232,7 +232,7 @@ final class HangoutController extends AbstractController
 
         // Vérifier que la sortie n’est pas en status créé
         $status = $hangout->getStatus()->getLabel();
-        if (in_array(strtolower($status), [ 'Créée', 'Annulée', 'Supprimée', 'Archivée'])) {
+        if (in_array(strtolower($status), ['Créée', 'Annulée', 'Supprimée', 'Archivée'])) {
             $this->addFlash('warning', 'Vous ne pouvez pas vous inscrire de cette sortie.');
             return $this->redirectToRoute('hangout_details', ['id' => $id]);
         }
@@ -251,7 +251,6 @@ final class HangoutController extends AbstractController
         $this->addFlash('success', 'Vous êtes inscrit à la sortie !');
 
         return $this->redirectToRoute('hangout_details', ['id' => $id]);
-
 
 
     }
@@ -302,57 +301,58 @@ final class HangoutController extends AbstractController
 
     #[Route('/{id}/update', name: 'update', methods: ['GET', 'POST'])]
     public function edit(
-        int $id,
-        HangoutRepository $hangoutRepository,
-        SpotRepository $spotRepository,
-        CityRepository  $cityRepository,
+        int                    $id,
+        HangoutRepository      $hangoutRepository,
+        SpotRepository         $spotRepository,
+        CityRepository         $cityRepository,
         EntityManagerInterface $entityManager,
-        Request           $request,
+        Request                $request,
     ): Response
     {
 
+        $dto = new UpdateHangoutDTO();
 
 
-        $spot   = $spotRepository->find($hangout->getSpot()->getId());
-        $city =  $cityRepository->find($spot->getCity()->getId());
+        $hangout = $hangoutRepository->find($id);
+        $spot = $spotRepository->find($hangout->getSpot()->getId());
+//        $city = $cityRepository->find($spot->getCity()->getId());
+        $dto->hangout = $hangout;
+        $dto->spot = $spot;
 
-        $formData = [
-            'hangout' => $hangout,
-            'spot' => $spot,
-        ];
+
+        $isOrganizer = $this->getUser()->getUserIdentifier() === $hangout->getOrganizer()->getUserIdentifier();
 
         if (!$hangout) {
             throw $this->createNotFoundException("Le sortie n'existe pas");
         }
-//        dd($this->getUser());
-        $isOrganizer = $this->getUser()->getUserIdentifier() === $hangout->getOrganizer()->getUserIdentifier();
+        if (!$isOrganizer) {
+            throw $this->createAccessDeniedException("L'utilisateur n'est pas l'organisateur ");
+        }
 
-            if (!$isOrganizer){
-                throw $this->createAccessDeniedException("L'utilisateur n'est pas l'organisateur ");
-            }
+        $form = $this->createForm(UpdateHangoutForm::class, $dto, [
+            'user' => $this->getUser(),
+        ]);
 
-        $updateHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout,['user' => $this->getUser()]);
-        $updateHangoutForm->handleRequest($request);
-        $updateSpotForm = $this->createForm(SpotForm::class, $spot);
-        $updateSpotForm->get('zipCode')->setData($spot->getCity()->getZipCode());
-        $updateSpotForm->get('cityName')->setData($spot->getCity()->getName());
-        $updateSpotForm->handleRequest($request);
+        $form->get('spot')->get('zipCode')->setData($dto->spot->getCity()->getZipCode());
+        $form->get('spot')->get('cityName')->setData($dto->spot->getCity()->getName());
 
-        if (($updateHangoutForm->isSubmitted() && $updateHangoutForm->isValid()) &&($updateSpotForm->isSubmitted() && $updateSpotForm->isValid()) ) {
-            $hangout->setOrganizer($this->getUser());
+        $form->handleRequest($request);
 
+        dump($form->isSubmitted());
+        if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $entityManager->persist($hangout);
+
+                $entityManager->persist($dto->spot);
+                $entityManager->persist($dto->hangout);
                 $entityManager->flush();
                 $this->addFlash('success', "Sortie Modifiée");
                 return $this->redirectToRoute('hangout_index');
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $this->addFlash('warning', $e->getMessage());
             }
         }
         return $this->render('hangout/update.html.twig', [
-            'createHangoutForm' => $updateHangoutForm->createView(),
-            'SpotForm'=>$updateSpotForm->createView(),
+            'form' => $form->createView(),
         ]);
     }
 

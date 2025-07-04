@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Hangout;
+use App\DTO\UpdateHangoutDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,9 +13,8 @@ class UpdateHangoutForm extends AbstractType
     {
         $builder
             ->add('hangout', CreateHangoutForm::class, [
-                'data_class' => Hangout::class,
-                'user' => $options['user'],
                 'label' => false,
+                'user' => $options['user'], // tu peux passer l'utilisateur à l'intérieur si besoin
             ])
             ->add('spot', SpotForm::class, [
                 'label' => false
@@ -25,8 +24,10 @@ class UpdateHangoutForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
+            'data_class' => UpdateHangoutDTO::class,
             'user' => null,
         ]);
     }
 }
+
 

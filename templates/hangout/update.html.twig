@@ -7,21 +7,44 @@
     <main>
         <h1>Update your Hangout</h1>
         <div>
-            {{ form_start(createHangoutForm) }}
-            {{ form_row(createHangoutForm.name) }}
-            {{ form_row(createHangoutForm.startingDate) }}
-            {{ form_row(createHangoutForm.registrationDeadline) }}
-            {{ form_row(createHangoutForm.nbInscriptionsMax) }}
-            {{ form_row(createHangoutForm.duration) }}
-            {{ form_row(createHangoutForm.description) }}
+            {{ form_start(form) }}
 
-            {{ form_end(createHangoutForm, {'render_rest': false}) }}
-            {{  form_start(SpotForm) }}
-            {{ form_end(SpotForm) }}
-            <button type="submit">Update</button>
-        </div>
-        <div>
+            <div id="update_hangout">
+                {{ form_row(form.hangout.name) }}
+                {{ form_row(form.hangout.startingDate) }}
+                {{ form_row(form.hangout.registrationDeadline) }}
+                {{ form_row(form.hangout.nbInscriptionsMax) }}
+                {{ form_row(form.hangout.duration) }}
+                {{ form_row(form.hangout.description) }}
+            </div>
+            <div id="update_spot">
+                {{ form_row(form.spot.name) }}
+                {{ form_row(form.spot.address) }}
+                {{ form_row(form.spot.latitude) }}
+                {{ form_row(form.spot.longitude) }}
+                {{ form_row(form.spot.zipCode) }}
+                {{ form_row(form.spot.cityName) }}
+            </div>
+            <div>
+            <a href="{{ path('spot_create') }}" id="btn-spot-create">+</a>
+            </div>
+            <button type="submit" class="btn btn-success" >Valider</button>
+            <div>
 
+
+
+                <a href="">
+                    <button class="btn btn-success">Publier la sortie</button>
+                </a>
+                <a href="">
+                    <button class="btn btn-success">Supprimer la sortie</button>
+                </a>
+                <a href="">
+                    <button  class="btn btn-success">Annuler</button>
+                </a>
+            </div>
+
+            {{ form_end(form, {'render_rest': false}) }}
         </div>
     </main>
 {% endblock %}
