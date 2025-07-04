@@ -7,12 +7,17 @@ use App\Entity\Spot;
 use App\Entity\User;
 use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
+use App\Form\SpotForm;
 use App\Repository\CampusRepository;
+use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
+use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
 use App\Service\HangoutFilterService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Metadata\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,9 +30,27 @@ final class HangoutController extends AbstractController
     public function index(
         Request           $request,
         HangoutRepository $hangoutRepository,
+        StatusRepository $statusRepository,
     ): Response
     {
         $user = $this->getUser();
+
+        $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
+        //Verification date des sorties
+        $today = new DateTimeImmutable('today');
+        $nextMonth = $today->modify('+1 month');
+
+        foreach ($hangouts as $sortie) {
+            if ($sortie->getStartingDate() < $today && $sortie->getStatus()->getLabel() !== 'Passée') {
+                $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
+                $sortie->setStatus($statusPassee);
+            }
+            if ($sortie->getStartingDate() < $nextMonth && $sortie->getStatus()->getLabel() === 'Passée') {
+                $statusArchivee = $statusRepository->findOneBy(['label' => 'Archivée']);
+                $sortie->setStatus($statusArchivee);
+            }
+        }
+
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
@@ -97,6 +120,10 @@ final class HangoutController extends AbstractController
 
         if (!$hangout) {
             $this->addFlash('danger', 'Unable to find Hangout entity.');
+            return $this->redirectToRoute('hangout_index');
+        }
+        if ($hangout->getStatus()->getLabel() === 'Archivee' or $hangout->getStatus()->getLabel() === 'Passée') {
+            $this->addFlash('warning', 'Vous ne pouvez pas modifier cette sortie.');
             return $this->redirectToRoute('hangout_index');
         }
         $users = $hangout->getUsers();
@@ -229,14 +256,60 @@ final class HangoutController extends AbstractController
 
     }
 
-    #[Route('/{id}', name: 'edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/update', name: 'update', methods: ['GET', 'POST'])]
     public function edit(
-        Request           $request,
+        int $id,
         HangoutRepository $hangoutRepository,
-        CampusRepository  $campusRepository,
+        SpotRepository $spotRepository,
+        CityRepository  $cityRepository,
+        EntityManagerInterface $entityManager,
+        Request           $request,
     ): Response
     {
-        return $this->render('hangout/edit.html.twig', []);
+
+
+        $hangout = $hangoutRepository->find($id);
+        $spot   = $spotRepository->find($hangout->getSpot()->getId());
+        $city =  $cityRepository->find($spot->getCity()->getId());
+
+        $formData = [
+            'hangout' => $hangout,
+            'spot' => $spot,
+        ];
+
+        if (!$hangout) {
+            throw $this->createNotFoundException("Le sortie n'existe pas");
+        }
+//        dd($this->getUser());
+        $isOrganizer = $this->getUser()->getUserIdentifier() === $hangout->getOrganizer()->getUserIdentifier();
+
+            if (!$isOrganizer){
+                throw $this->createAccessDeniedException("L'utilisateur n'est pas l'organisateur ");
+            }
+
+        $updateHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout,['user' => $this->getUser()]);
+        $updateHangoutForm->handleRequest($request);
+        $updateSpotForm = $this->createForm(SpotForm::class, $spot);
+        $updateSpotForm->get('zipCode')->setData($spot->getCity()->getZipCode());
+        $updateSpotForm->get('cityName')->setData($spot->getCity()->getName());
+        $updateSpotForm->handleRequest($request);
+
+        if (($updateHangoutForm->isSubmitted() && $updateHangoutForm->isValid()) &&($updateSpotForm->isSubmitted() && $updateSpotForm->isValid()) ) {
+            $hangout->setOrganizer($this->getUser());
+
+            try {
+                $entityManager->persist($hangout);
+                $entityManager->flush();
+                $this->addFlash('success', "Sortie Modifiée");
+                return $this->redirectToRoute('hangout_index');
+            }catch(Exception $e){
+                $this->addFlash('warning', $e->getMessage());
+            }
+        }
+        return $this->render('hangout/update.html.twig', [
+            'createHangoutForm' => $updateHangoutForm->createView(),
+            'SpotForm'=>$updateSpotForm->createView(),
+        ]);
     }
 
 }
