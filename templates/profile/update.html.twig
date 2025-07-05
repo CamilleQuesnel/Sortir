@@ -1,42 +1,76 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon profil{% endblock %}
+{% block title %}Modifier mon profil{% endblock %}
 
 {% block body %}
-<h1>My profile - {{ app.user.pseudo }}</h1>
+    <h1 id="profile-h1">Modifier mon profil - {{ app.user.pseudo |capitalize }}</h1>
 
-<div class="form-wrapper">
-    <div class="avatar-container">
-        <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}"
-             alt="Avatar">
-        {#            {{ dump(app.user.image) }} #}
+    <div class="profile-wrapper">
+        <div class="profile-avatar">
+            <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
 
-        {{ form_start(profileImageForm, {
-            attr: { class: 'profile-form' },
-            method: 'POST',
-            enctype: 'multipart/form-data',
-            action: path('app_profile_update_image')
-        }) }}
-        {{ form_row(profileImageForm.imageFile) }}
-        <button type="submit">Change my avatar</button>
-        {{ form_end(profileImageForm) }}
+            {{ form_start(profileImageForm, {
+                attr: { class: 'profile-form' },
+                method: 'POST',
+                enctype: 'multipart/form-data',
+                action: path('app_profile_update_image')
+            }) }}
+            {{ form_row(profileImageForm.imageFile) }}
+            <button type="submit" class="btn-action">Télécharger ma photo sur le serveur</button>
+            {{ form_end(profileImageForm) }}
+        </div>
+
+        <div class="profile-info">
+            {{ form_start(updateProfileForm, { action: path('app_profile_update') }) }}
+
+            <div class="profile-info-row">
+                <label for="pseudo">Pseudo :</label>
+                {{ form_widget(updateProfileForm.pseudo)}}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="firstName">Prénom :</label>
+                {{ form_widget(updateProfileForm.firstName)}}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="lastName">Nom :</label>
+                {{ form_widget(updateProfileForm.lastName)}}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="phoneNumber">Numéro de téléphone :</label>
+                {{ form_widget(updateProfileForm.phoneNumber)}}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="mail">Email :</label>
+                {{ form_widget(updateProfileForm.mail) }}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="plainPassword">Mot de passe :</label>
+                {{ form_widget(updateProfileForm.plainPassword) }}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="confirmPassword">Confirmation du mot de passe :</label>
+                {{ form_widget(updateProfileForm.confirmPassword) }}
+            </div>
+
+            <div class="profile-info-row">
+                <label for="campus">Campus :</label>
+                {{ form_widget(updateProfileForm.campus) }}
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-action">Enregistrer</button>
+                <a href="{{ path('app_profile') }}" class="btn-action">Annuler</a>
+            </div>
+
+            {{ form_end(updateProfileForm) }}
+        </div>
     </div>
-
-    {{ form_start(updateProfileForm, { action: path('app_profile_update') }) }}
-    {{ form_row(updateProfileForm.firstName) }}
-    {{ form_row(updateProfileForm.lastName) }}
-    {{ form_row(updateProfileForm.mail) }}
-    {{ form_row(updateProfileForm.phoneNumber) }}
-    {{ form_row(updateProfileForm.pseudo) }}
-    {{ form_row(updateProfileForm.plainPassword) }}
-    {{ form_row(updateProfileForm.confirmPassword) }}
-
-    {{ form_row(updateProfileForm.campus) }}
-    {{ form_errors(updateProfileForm.plainPassword) }}
-
-
-    <button type="submit">Mettre à jour mes informations</button>
-    {{ form_end(updateProfileForm) }}
 
 
     {% for label, messages in app.flashes %}
@@ -45,9 +79,5 @@
                 {{ message }}
             </div>
         {% endfor %}
-
-        </div>
     {% endfor %}
-
-
-    {% endblock %}
+{% endblock %}

@@ -15,9 +15,14 @@ class ProfileImageFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('imageFile', FileType::class, [
-            'label' => 'Modify my avatar',
+            'label' => false,
             'mapped' => false,
             'required' => false,
+            'attr' => [
+                'class' => 'hidden-file-input',
+                'accept' => 'image/*',
+                'id' => 'avatar-upload'
+            ],
             'constraints' => [
                 new File([
                     'maxSize' => '2M',
