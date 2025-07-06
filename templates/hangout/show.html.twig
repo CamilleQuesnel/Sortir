@@ -1,55 +1,57 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <main>
+    <main class="content">
+        <section class="hangout">
+            <h1> Détail de la sortie </h1>
 
-        <h1> Show hangout</h1>
-        Nom de la sortie : {{ hangout.name }}<br>
+            <div class="hangout-grid">
+                <div class="left-column">
+                    <p><strong>Nom de la sortie :</strong> {{ hangout.name }}</p>
+                    <p><strong>Date et heure :</strong> {{ hangout.startingDate|date('d/m/Y H:i') }}</p>
+                    <p><strong>Date limite d'inscription :</strong> {{ hangout.registrationDeadline|date('d/m/Y H:i') }}</p>
+                    <p><strong>Nombre de places :</strong> {{ hangout.nbInscriptionsMax }}</p>
 
-        Date et heure de la sortie : {{ hangout.startingDate |date('d/m/Y H:i') }}<br>
-        Date limite d'inscription : {{ hangout.registrationDeadline |date('d/m/Y H:i') }}<br>
-        Nombre de places :  : {{ hangout.nbInscriptionsMax }}<br>
+                    {% set hours = hangout.duration // 60 %}
+                    {% set minutes = hangout.duration % 60 %}
+                    <p><strong>Durée :</strong> {{ hours }} h {{ minutes }} min</p>
 
-        {#        converti les minutes en heures #}
-        {% set hours = hangout.duration // 60 %}
-        {% set minutes = hangout.duration % 60 %}
-        Durée : {{ hours }} h {{ minutes }} min <br>
+                    <p><strong>Description et infos :</strong><br> {{ hangout.description }}</p>
+                </div>
 
-        Description et infos : {{ hangout.description }}<br>
-{#        Status : {{ hangout.status.label }}<br>#}
-        Lieu : {{ hangout.spot.name }}<br>
-        Rue : {{ hangout.spot.address }}<br>
-        Ville : {{ hangout.spot.city.name }}<br>
-        Code postal : {{ hangout.spot.city.zipCode }}<br>
-        Latitude : {{ hangout.spot.latitude }}<br>
-        Longitude : {{ hangout.spot.longitude }}<br>
+                <div class="right-column">
+                    <p><strong>Lieu :</strong> {{ hangout.spot.name }}</p>
+                    <p><strong>Rue :</strong> {{ hangout.spot.address }}</p>
+                    <p><strong>Ville :</strong> {{ hangout.spot.city.name }}</p>
+                    <p><strong>Code postal :</strong> {{ hangout.spot.city.zipCode }}</p>
+                    <p><strong>Latitude :</strong> {{ hangout.spot.latitude }}</p>
+                    <p><strong>Longitude :</strong> {{ hangout.spot.longitude }}</p>
+                </div>
+            </div>
 
-
-        <h2>Liste des participants inscrits :</h2>
-        <section class="results">
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>Pseudo</th>
-                <th>Nom</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr>
-                    <td><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.pseudo }}</a></td>
-
-                    <td><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.firstname }} {{ user.lastname }}</a></td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="2">Aucun participant</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+            <h2 id="show-hangout">Liste des participants inscrits :</h2>
+            <section class="results">
+                <table class="custom-table">
+                    <thead>
+                    <tr>
+                        <th>Pseudo</th>
+                        <th>Nom</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td class="participants-name"><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.pseudo }}</a></td>
+                            <td class="participants-name"><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.firstname }} {{ user.lastname }}</a></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2">Aucun participant</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
         </section>
     </main>
-
 {% endblock %}
-

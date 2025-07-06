@@ -665,6 +665,20 @@ button {
     box-sizing: border-box;
 }
 
+/*============= SHOW HANGOUT ===============*/
+#show-hangout {
+    text-align: center;
+}
+.participants-name a{
+    color: #014983;
+    font-weight: bold;
+}
+
+.participants-name a:hover{
+    color: #4CEBF0;
+    font-weight: bold;
+    text-decoration: none;
+}
 
 /* ====== RESPONSIVE (mobile) ====== */
 @media (max-width: 768px) {

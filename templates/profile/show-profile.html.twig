@@ -3,26 +3,26 @@
 {% block title %}Mon profil{% endblock %}
 
 {% block body %}
+    <main class="content">
+        <section class="hangout">
+            <h1 id="profile-h1">Profil participant – {{ user.pseudo | capitalize }}</h1>
 
-    <h1>My profile - {{ user.pseudo | capitalize }}</h1>
+            <div class="profile-wrapper">
+                <div class="profile-avatar">
+                    <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
+                    {% if app.user.image %}
+                        <p>{{ app.user.image }}</p>
+                    {% endif %}
+                </div>
 
-    <div class="form-wrapper">
-        <div class="avatar-container">
-            <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
-{#            {{ dump(app.user.image) }}#}
-
-{{ app.user.image }}
-
-        </div>
-
-        <div>
-
-            <p>Firstname : {{ user.firstName | capitalize}}</p>
-            <p>Lastname : {{ user.lastName | capitalize}}</p>
-            <p>Email : {{ user.mail }}</p>
-            <p>Phone Number : {{ user.phoneNumber }}</p>
-            <p>Campus : {{ user.campus.name }}</p>
-
-        </div>
-    </div>
+                <div class="profile-info">
+                    <p><strong>Prénom :</strong> {{ user.firstName | capitalize }}</p>
+                    <p><strong>Nom :</strong> {{ user.lastName | capitalize }}</p>
+                    <p><strong>Email :</strong> {{ user.mail }}</p>
+                    <p><strong>Numéro de téléphone :</strong> {{ user.phoneNumber }}</p>
+                    <p><strong>Campus :</strong> {{ user.campus.name }}</p>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}
