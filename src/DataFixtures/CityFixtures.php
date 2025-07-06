@@ -13,16 +13,19 @@ class CityFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
-
-        for ($i = 0; $i < 50; $i++) {
+        $json = file_get_contents('https://geo.api.gouv.fr/communes?fields=nom,codesPostaux&limit=20');
+        $cities = json_decode($json, true);
+        $i=0;
+        foreach ($cities as $c) {
             $city = new City();
-            $city->setName($faker->city());
-            $city->setZipCode($faker->postcode());
+            $city->setName($c['nom']);
+            $city->setZipCode($c['codesPostaux']['0']);
 
             $manager->persist($city);
 
             // Référence pour SpotFixtures
             $this->addReference(self::CITY_REFERENCE_PREFIX . $i, $city);
+            $i++;
         }
 
         $manager->flush();
