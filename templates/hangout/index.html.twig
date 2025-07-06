@@ -55,9 +55,9 @@
                 {{ form_end(form) }}
 
             </section>
-            <div>
-                <section class="custom-results">
-                    <table class="custom-table">
+            <div class="results">
+                <section class="custom-results ">
+                    <table class="custom-table ">
                         <thead>
                         <tr>
                             <th>Nom de la sortie</th>
@@ -89,6 +89,9 @@
                                 <td id="col-actions">
                                     {% if sortie.status.label != 'Archivée' %}
                                         <a href="{{ path('hangout_details', {'id': sortie.id}) }}" class="action-link view">Afficher</a>
+                                    {% endif %}
+                                    {% if sortie.status.label == 'Annulée' and sortie.organizer == app.user %}
+                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}" class="action-link edit">Modifier</a>
                                     {% endif %}
                                     {% if sortie.status.label == 'Créée' and sortie.organizer == app.user %}
                                         <a href="{{ path('hangout_update', {'id': sortie.id}) }}" class="action-link edit">Modifier</a>

@@ -1,0 +1,216 @@
+/* Titre */
+#update-hangout h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.hangout-grid {
+    max-width: 1000px; /* agrandit la grille globale */
+
+    /* Colonnes */
+
+    .left-column,
+    .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Champs de formulaire */
+
+    form div.form-group,
+    form div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Champ input + label */
+
+    form label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    form input,
+    form select,
+    form textarea {
+        padding: 8px;
+        border: 1px solid #000;
+        background-color: #e3fafa;
+        box-shadow: 2px 2px 0 #000;
+        transition: 0.2s;
+    }
+
+    form input:focus,
+    form select:focus,
+    form textarea:focus {
+        outline: none;
+        box-shadow: 2px 2px 0 #666;
+    }
+
+
+    /* Boutons d'action */
+
+    .action-buttons {
+        grid-column: span 2;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        margin-top: 30px;
+    }
+
+    .action-buttons button {
+        padding: 10px 20px;
+        font-weight: bold;
+        border: 1px solid #000;
+        background-color: white;
+        box-shadow: 2px 2px 0 #000;
+        cursor: pointer;
+    }
+
+    .action-buttons button:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Agrandir les champs de formulaire */
+
+    .left-column input,
+    .left-column select,
+    .left-column textarea {
+        width: 100%; /* Remplit toute la largeur de la colonne */
+        min-width: 500px; /* Tu peux ajuster cette valeur si tu veux plus long */
+        height: 20px;
+        padding: 8px;
+        border: 1px solid #000;
+        /*background-color: #e3fafa;*/
+        box-shadow: 2px 2px 0 #000;
+        transition: 0.2s;
+    }
+
+    .right-column input,
+    .right-column select,
+    .right-column textarea {
+        width: 100%; /* Remplit toute la largeur de la colonne */
+        max-width: 350px; /* Tu peux ajuster cette valeur si tu veux plus long */
+        padding: 8px;
+        border: 1px solid #000;
+        /*background-color: #e3fafa;*/
+        box-shadow: 2px 2px 0 #000;
+        transition: 0.2s;
+    }
+
+    #update-hangout input[type="text"],
+    #update-hangout input[type="datetime-local"],
+    #update-hangout input[type="number"],
+    #update-hangout textarea,
+    #update-hangout select {
+        height: 40px;
+        padding: 0 0.8rem;
+        font-size: 16px;
+        border: 1px solid black;
+        box-sizing: border-box;
+    }
+
+    #update-hangout h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    #update-hangout input[type="text"],
+    #update-hangout input[type="datetime-local"],
+    #update-hangout input[type="number"],
+    #update-hangout textarea,
+    #update-hangout select {
+        height: 40px;
+        padding: 0 0.8rem;
+        font-size: 16px;
+        border: 1px solid black;
+        box-sizing: border-box;
+    }
+
+    #update-hangout textarea {
+        height: auto;
+        min-height: 40px;
+        resize: vertical;
+    }
+
+    #update-hangout .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+
+    .content {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .hangout {
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .hangout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+
+    .left-column,
+    .right-column {
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid black;
+        padding-left: 10px;
+        gap: 1rem;
+    }
+
+    .hangout input,
+    .hangout textarea,
+    .hangout select {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .left-column textarea {
+        height: 70px;
+        resize: vertical;
+        white-space: pre-wrap;
+        overflow-y: auto;
+    }
+
+    .spot-select {
+        display: flex;
+        align-items: end;
+        gap: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 5rem;
+        margin-top: 2rem;
+    }
+
+    #spot-info {
+        margin-top: 1rem;
+        padding: 1rem;
+    }
+
+    #btn-spot-create {
+        background-color: #4CEBF0;
+        color: white;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        box-shadow: 2px 2px 0px black;
+        transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+
+}

@@ -304,7 +304,7 @@ final class HangoutController extends AbstractController
     public function edit(
         int                    $id,
         HangoutRepository      $hangoutRepository,
-        SpotRepository         $spotRepository,
+        StatusRepository       $statusRepository,
         CityRepository         $cityRepository,
         EntityManagerInterface $entityManager,
         Request                $request,
@@ -317,6 +317,9 @@ final class HangoutController extends AbstractController
         $spots = $entityManager->getRepository(Spot::class)->findAll();
         $spot = $hangout->getSpot();
 
+        $oldLat = $spot->getLatitude();
+        $oldLong = $spot->getLongitude();
+
         $city = $cityRepository->find($spot->getCity()->getId());
         $spot->setCity($city);
         $isOrganizer = $this->getUser() === $hangout->getOrganizer();
@@ -325,17 +328,14 @@ final class HangoutController extends AbstractController
         }
 
         // 2. Créer le formulaire avec les données de l'entité
-
         $form = $this->createForm(HangoutWithSpotUpdateForm::class, [
             'hangout' => $hangout,
             'spot' => $spot,
         ]);
-//        $updateHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout, ['user' => $this->getUser()]);
-//        $updateSpotForm = $this->createForm(SpotForm::class, $spot);
-
 
         // 3. Traiter la requête (récupérer les données POST)
         $zip = $city->getZipCode();
+
         $form->get('spot')->get('zipCode')->setData($zip);
         $form->handleRequest($request);
 //        $updateHangoutForm->handleRequest($request);
@@ -343,9 +343,29 @@ final class HangoutController extends AbstractController
         // 4. Valider et sauvegarder
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            //test si button publier a ete cliquer
+            if ($form->get('publish')->isClicked()) {
+                $hangout->setStatus($statusRepository->findOneBy(['label' => 'Ouverte']));
+            }
 
-//            $entityManager->persist($data['spot']);
-//            $entityManager->persist($data['hangout']);
+            //Récupérer le spot sélectionné dans le formulaire
+            $selectedSpot = $form->get('hangout')->get('spot')->getData();
+
+            // test si le spot à changer
+            if ($selectedSpot->getId() !== $spot->getId()) {
+                //rectification entity spot ?
+                $spot->setLatitude($oldLat);
+                $spot->setLongitude($oldLong);
+                // Récupérer les valeurs latitude et longitude modifiées dans le formulaire
+                $newLatitude = $form->get('spot')->get('latitude')->getData();
+                $newLongitude = $form->get('spot')->get('longitude')->getData();
+
+                $selectedSpot->setLatitude($newLatitude);
+                $selectedSpot->setLongitude($newLongitude);
+                $data['spot'] = $selectedSpot;
+            }
+
+
             $entityManager->flush();// Doctrine détecte les changements et les sauvegarde
 
             // Optionnel : message flash pour confirmation
@@ -356,9 +376,10 @@ final class HangoutController extends AbstractController
 //
 
         return $this->render('hangout/update.html.twig', [
+            'id' => $id,
             'form' => $form->createView(),
             'spotForm' => $spot,
-            'spotALL'=>$spots
+            'spotALL' => $spots
         ]);
     }
 

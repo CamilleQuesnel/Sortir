@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,6 +17,10 @@ class HangoutWithSpotUpdateForm extends AbstractType
             ])
             ->add('spot', SpotForm::class, [
                 'label' => false,
+            ])
+            ->add('publish', SubmitType::class, [
+                'label' => 'Publier la sortie',
+                'attr' => ['class' => 'btn btn-primary']
             ]);
     }
 
