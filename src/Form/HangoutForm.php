@@ -28,7 +28,7 @@ class HangoutForm extends AbstractType
 //                'mapped' => false,
                 'label' => 'Le nom de la sortie contient :',
                 'required' => false,
-                'attr' => ['placeholder' => 'search']
+                'attr' => ['placeholder' => 'Rechercher...']
             ])
             ->add('dateFrom', DateType::class, [
 //                'mapped' => false,

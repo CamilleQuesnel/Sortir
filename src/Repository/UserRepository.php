@@ -40,13 +40,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     //permet de se logger soit par pseudo soit par email
-    public function loadUserByIdentifier(string $identifier): ?User
+    public function loadUserByIdentifier(string $usernameOrEmail): ?User
     {
+        $entityManager = $this->getEntityManager();
 
-        return $this->createQueryBuilder('u')
-            ->where('u.pseudo = :identifier OR u.mail = :identifier')
-            ->setParameter('identifier', $identifier)
-            ->getQuery()
+        return $entityManager->createQuery(
+            'SELECT u
+                FROM App\Entity\User u
+                WHERE u.pseudo = :query
+                OR u.mail = :query'
+        )
+            ->setParameter('query', $usernameOrEmail)
             ->getOneOrNullResult();
     }
 

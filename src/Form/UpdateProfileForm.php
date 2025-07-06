@@ -27,10 +27,8 @@ class UpdateProfileForm extends AbstractType
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'Password : ',
                 'mapped' => false,
+                'required' => false,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
                     new Length([
                         'min' => 8,
                         'minMessage' => 'Your password should be at least {{ limit }} characters',
@@ -43,13 +41,14 @@ class UpdateProfileForm extends AbstractType
                 ],
             ])
 
+
             ->add('confirmPassword', PasswordType::class, [
                 'label' => 'Confirm Password : ',
                 'mapped' => false,
-                'constraints' => [new NotBlank()],
+                'required' => false,
                 'attr' => ['placeholder' => 'Password confirmation'],
-                'required' => true,
             ])
+
 
             ->add('firstName')
             ->add('lastName')

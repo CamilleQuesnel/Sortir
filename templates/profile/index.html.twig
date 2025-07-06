@@ -3,13 +3,11 @@
 {% block title %}Mon profil{% endblock %}
 
 {% block body %}
+    <h1 id="profile-h1">Mon profil - {{ app.user.pseudo | capitalize }}</h1>
 
-    <h1>My profile - {{ app.user.pseudo | capitalize }}</h1>
-
-    <div class="form-wrapper">
-        <div class="avatar-container">
+    <div class="profile-wrapper">
+        <div class="profile-avatar">
             <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
-{#            {{ dump(app.user.image) }}#}
 
             {{ form_start(profileImageForm, {
                 attr: { class: 'profile-form' },
@@ -18,23 +16,24 @@
                 action: path('app_profile_update_image')
             }) }}
             {{ form_row(profileImageForm.imageFile) }}
-            <button type="submit">Change my avatar</button>
+            <button type="submit" class="btn-action">Télécharger ma photo vers le serveur</button>
             {{ form_end(profileImageForm) }}
         </div>
 
-        <div>
-
-            <p>Firstname : {{ app.user.firstName | capitalize}}</p>
-            <p>Lastname : {{ app.user.lastName | capitalize}}</p>
-            <p>Email : {{ app.user.mail }}</p>
-            <p>Phone Number : {{ app.user.phoneNumber }}</p>
-            <p>Campus : {{ app.user.campus.name }}</p>
-
-            <div class="form-buttons">
-                <a href="{{ path('app_profile_update') }}">
-                    <button type="button">Modify my profile</button>
-                </a>
-            </div>
+        <div class="profile-info">
+            <p><strong>Pseudo :</strong> {{ app.user.pseudo | capitalize}}</p>
+            <p><strong>Prénom :</strong> {{ app.user.firstName | capitalize }}</p>
+            <p><strong>Nom :</strong> {{ app.user.lastName | capitalize }}</p>
+            <p><strong>Numéro de téléphone :</strong> {{ app.user.phoneNumber }}</p>
+            <p><strong>Email :</strong> {{ app.user.mail }}</p>
+            <p><strong>Campus :</strong> {{ app.user.campus.name }}</p>
         </div>
     </div>
+
+    <div class="form-buttons">
+        <a href="{{ path('app_profile_update') }}">
+            <button type="button" class="btn-action">Modifier mes informations</button>
+        </a>
+    </div>
 {% endblock %}
+
