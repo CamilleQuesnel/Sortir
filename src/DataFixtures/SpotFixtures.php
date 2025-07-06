@@ -20,7 +20,7 @@ class SpotFixtures extends Fixture implements DependentFixtureInterface
         for ($i = 0; $i < 50; $i++) {
             $spot = new Spot();
             $spot->setName('Lieu ' . $faker->word());
-            $spot->setAddress($faker->address());
+            $spot->setAddress($faker->streetAddress());
             $spot->setLatitude((string) ($faker->latitude()));
             $spot->setLongitude((string) ($faker->longitude()));
 

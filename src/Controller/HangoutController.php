@@ -8,6 +8,7 @@ use App\Entity\Spot;
 use App\Entity\User;
 use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
+use App\Form\HangoutWithSpotUpdateForm;
 use App\Form\SpotForm;
 use App\Form\UpdateHangoutForm;
 use App\Repository\CityRepository;
@@ -257,11 +258,12 @@ final class HangoutController extends AbstractController
 
     #[Route('/{id}/delete', name: 'delete', methods: ['GET', 'POST'])]
     public function delete(
-        int $id,
+        int                    $id,
         EntityManagerInterface $entityManager,
-        HangoutRepository $hangoutRepository,
-        StatusRepository $statusRepository
-    ): Response {
+        HangoutRepository      $hangoutRepository,
+        StatusRepository       $statusRepository
+    ): Response
+    {
         $hangout = $hangoutRepository->find($id);
 
         if (!$hangout) {
@@ -298,7 +300,6 @@ final class HangoutController extends AbstractController
     }
 
 
-
     #[Route('/{id}/update', name: 'update', methods: ['GET', 'POST'])]
     public function edit(
         int                    $id,
@@ -309,50 +310,55 @@ final class HangoutController extends AbstractController
         Request                $request,
     ): Response
     {
-
-        $dto = new UpdateHangoutDTO();
-
-
-        $hangout = $hangoutRepository->find($id);
-        $spot = $spotRepository->find($hangout->getSpot()->getId());
-//        $city = $cityRepository->find($spot->getCity()->getId());
-        $dto->hangout = $hangout;
-        $dto->spot = $spot;
-
-
-        $isOrganizer = $this->getUser()->getUserIdentifier() === $hangout->getOrganizer()->getUserIdentifier();
-
+        $hangout = $hangoutRepository->find($id);// récuperation de l'entité en bdd
         if (!$hangout) {
             throw $this->createNotFoundException("Le sortie n'existe pas");
         }
+        $spots = $entityManager->getRepository(Spot::class)->findAll();
+        $spot = $hangout->getSpot();
+
+        $city = $cityRepository->find($spot->getCity()->getId());
+        $spot->setCity($city);
+        $isOrganizer = $this->getUser() === $hangout->getOrganizer();
         if (!$isOrganizer) {
             throw $this->createAccessDeniedException("L'utilisateur n'est pas l'organisateur ");
         }
 
-        $form = $this->createForm(UpdateHangoutForm::class, $dto, [
-            'user' => $this->getUser(),
+        // 2. Créer le formulaire avec les données de l'entité
+
+        $form = $this->createForm(HangoutWithSpotUpdateForm::class, [
+            'hangout' => $hangout,
+            'spot' => $spot,
         ]);
+//        $updateHangoutForm = $this->createForm(CreateHangoutForm::class, $hangout, ['user' => $this->getUser()]);
+//        $updateSpotForm = $this->createForm(SpotForm::class, $spot);
 
-        $form->get('spot')->get('zipCode')->setData($dto->spot->getCity()->getZipCode());
-        $form->get('spot')->get('cityName')->setData($dto->spot->getCity()->getName());
 
+        // 3. Traiter la requête (récupérer les données POST)
+        $zip = $city->getZipCode();
+        $form->get('spot')->get('zipCode')->setData($zip);
         $form->handleRequest($request);
-
-        dump($form->isSubmitted());
+//        $updateHangoutForm->handleRequest($request);
+//        $updateSpotForm->handleRequest($request);
+        // 4. Valider et sauvegarder
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
+            $data = $form->getData();
 
-                $entityManager->persist($dto->spot);
-                $entityManager->persist($dto->hangout);
-                $entityManager->flush();
-                $this->addFlash('success', "Sortie Modifiée");
-                return $this->redirectToRoute('hangout_index');
-            } catch (Exception $e) {
-                $this->addFlash('warning', $e->getMessage());
-            }
+//            $entityManager->persist($data['spot']);
+//            $entityManager->persist($data['hangout']);
+            $entityManager->flush();// Doctrine détecte les changements et les sauvegarde
+
+            // Optionnel : message flash pour confirmation
+            $this->addFlash('success', 'Hangout mis à jour avec succès !');
+            return $this->redirectToRoute('hangout_index');
+
         }
+//
+
         return $this->render('hangout/update.html.twig', [
             'form' => $form->createView(),
+            'spotForm' => $spot,
+            'spotALL'=>$spots
         ]);
     }
 
