@@ -20,7 +20,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class ProfileController extends AbstractController
 {
 
-    #[Route('profile/{id}', name: 'app_profile_id', methods: ['GET'])]
+    #[Route('profile/{id}', name: 'app_profile_id', requirements: ['id' => '\d+'], methods: ['GET'])]
+//rajout du requirement pour éviter le conflit de route
     public function profileId(
         int $id,
         UserRepository $userRepository) : Response
@@ -29,7 +30,6 @@ final class ProfileController extends AbstractController
 
         return $this->render('profile/show-profile.html.twig', ['user' => $user]);
     }
-
 
     #[Route('/profile', name: 'app_profile', methods: ['GET'])]
     public function profile(Request $request): Response
@@ -46,16 +46,15 @@ final class ProfileController extends AbstractController
 
     #[Route('/profile/update-image', name: 'app_profile_update_image', methods: ['POST'])]
     public function updateImage(
-        Request                                                         $request,
-        EntityManagerInterface                                          $entityManager,
-        SluggerInterface                                                $slugger,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
         #[Autowire('%kernel.project_dir%/public/upload/images')] string $ImagesDirectory
-    ): Response
-    {
+    ): Response {
         $user = $this->getUser();
 
 
-        $form = $this->createForm(ProfileImageFormType::class, $user);
+        $form = $this->createForm(ProfileImageFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -67,26 +66,27 @@ final class ProfileController extends AbstractController
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
-                    $imageFile->move(
-                        $ImagesDirectory, $newFilename
-                    );
+                    $imageFile->move($ImagesDirectory, $newFilename);
                     $user->setImage($newFilename);
 
+                    $entityManager->persist($user);
+                    $entityManager->flush();
+
+                    $this->addFlash('success', 'Image mise à jour avec succès !');
                 } catch (FileException $e) {
                     $this->addFlash('danger', 'Error, picture can\'t be loaded');
-                    return $this->redirectToRoute('app_profile');
                 }
-
-                $user->setImage($newFilename);
-                $entityManager->persist($user);
-                $entityManager->flush();
-//                dd($user->getImage());
-                $this->addFlash('success', 'Image mise à jour avec succès !');
             }
         }
 
         return $this->redirectToRoute('app_profile');
     }
+
+
+
+
+
+
 
 
     #[Route('/profile/update', name: 'app_profile_update', methods: ['POST', 'GET'])]
@@ -98,11 +98,15 @@ final class ProfileController extends AbstractController
         UserPasswordHasherInterface $passwordHasher
     ): Response {
         $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Utilisateur non connecté !');
+        }
 
         $updateProfileForm = $this->createForm(UpdateProfileForm::class, $user);
         $profileImageForm = $this->createForm(ProfileImageFormType::class, $user);
 
         $updateProfileForm->handleRequest($request);
+        dump($updateProfileForm->getData());
         $profileImageForm->handleRequest($request);
 
         // Traitement image (comme avant)
@@ -130,6 +134,9 @@ final class ProfileController extends AbstractController
 
         // Traitement du reste du profil
         if ($updateProfileForm->isSubmitted()) {
+            dump($updateProfileForm->isValid());
+            dump($updateProfileForm->getErrors(true, false));
+
             if ($updateProfileForm->isValid()) {
                 // Mot de passe
                 $plainPassword = $updateProfileForm->get('plainPassword')->getData();
@@ -144,6 +151,7 @@ final class ProfileController extends AbstractController
                         $user->setPassword($hashedPassword);
                     }
 
+                    $entityManager->persist($user);
                     $entityManager->flush();
                     $this->addFlash('success', 'Profile updated!');
                     return $this->redirectToRoute('app_profile_update');
@@ -159,6 +167,7 @@ final class ProfileController extends AbstractController
         return $this->render('profile/update.html.twig', [
             'updateProfileForm' => $updateProfileForm,
             'profileImageForm' => $profileImageForm,
+            'user' => $user,
         ]);
 
     }

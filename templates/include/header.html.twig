@@ -1,27 +1,26 @@
 <header>
-    <nav id="nav">
-        <div id="logo_titre">
-            <a id="nav-logo-link" href="{{ path('hangout_index') }}">
-                <img id="nav-logo" src="{{ asset('images/logoSortir.png') }}" alt="Logo de Sortir.com">
+    <nav id="custom-nav">
+        <div id="custom-logo-title">
+            <a id="custom-logo-link" href="{{ path('hangout_index') }}">
+                <img id="custom-logo" src="{{ asset('images/logoSortir.png') }}" alt="Logo de Sortir.com">
             </a>
 
-            <div id="nav-title">
+            <div id="custom-title">
                 <a href="{{ path('hangout_index') }}">Sortir.com</a>
             </div>
         </div>
-        <div class="button-list">
+        <div class="custom-menu">
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') %}
-                    <p class="nav-button"><a href="{{ path('hangout_index') }}">Ville</a></p>
-                    <p class="nav-button"><a href="{{ path('hangout_index') }}">Sites</a></p>
+                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">VILLE</a></p>
+                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">SITES</a></p>
                 {% endif %}
-                <p class="nav-button"><a href="{{ path('hangout_index') }}">Accueil</a></p>
-                <p class="nav-button"><a href="{{ path('app_profile') }}">Mon profil</a></p>
-                <p class="nav-button"><a href="{{ path('hangout_publish') }}">Créer une sortie</a></p>
-                <p class="nav-button"><a href="{{ path('app_logout') }}">Se déconnecter</a></p>
-            {% else %}
-                {#                <p class="nav-button"><a href="{{ path('app_login') }}">Log in</a></p> #}
-                <p class="nav-button"><a href="{{ path('app_register') }}">Register</a></p>
+                <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">ACCEUIL</a></p>
+                <p class="custom-nav-item"><a href="{{ path('app_profile') }}">MON PROFIL</a></p>
+{#                <p class="custom-nav-item"><a href="{{ path('hangout_publish') }}">Créer une sortie</a></p>#}
+                <p class="custom-nav-item"><a href="{{ path('app_logout') }}">SE DÉCONNECTER</a></p>
+{#            {% else %}#}
+{#                <p class="custom-nav-item"><a href="{{ path('app_register') }}">Register</a></p>#}
             {% endif %}
         </div>
     </nav>

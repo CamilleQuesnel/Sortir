@@ -22,35 +22,40 @@ class CreateHangoutForm extends AbstractType
         $user = $options['user'] ?? null;
         $builder
 
-            ->add('name')
+            ->add('name', TextType::class, [
+                'label' => 'Nom de la sortie',
+                'attr' => ['class' => 'btn-action']
+            ])
             ->add('startingDate')
             ->add('registrationDeadline')
             ->add('duration')
             ->add('nbInscriptionsMax')
             ->add('description')
 
-            ->add('organizer', TextType::class, [
-                'mapped' => false,
-                'data' => $options['user'] ? $options['user']->getPseudo() : '',
-                'disabled' => true,
-                'label' => 'Organizer'
-            ])
+//            ->add('organizer', TextType::class, [
+//                'mapped' => false,
+//                'data' => $options['user'] ? $options['user']->getPseudo() : '',
+//                'disabled' => true,
+//                'label' => 'Organisateur',
+//                'attr' => ['class' => 'btn-action']
+//            ])
             ->add('spot', EntityType::class, [
                 'class' => Spot::class,
                 'choice_label' => 'name',
-                'placeholder' => 'Choose a spot',
+                'placeholder' => 'Choisir un lieu',
+                'label' => 'Lieu',
                 'attr' => [
                     'id' => 'spot-select'
                 ]
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save',
-                'attr' => ['class' => 'btn btn-secondary']
+                'label' => 'Enregistrer',
+                'attr' => ['class' => 'btn-action']
             ])
 
             ->add('publish', SubmitType::class, [
-                'label' => 'Publish hangout',
-                'attr' => ['class' => 'btn btn-primary']
+                'label' => 'Créer une sortie',
+                'attr' => ['class' => 'btn-action']
             ])
 
 
