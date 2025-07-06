@@ -1,52 +1,104 @@
 {% extends 'base.html.twig' %}
 {% block title %}
-    Update Hangout
+    Modifier une sortie
 {% endblock %}
-
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/style_update_Hangout.css') }}">
+{% endblock %}
 {% block body %}
-    <main>
-        <h1>Update your Hangout</h1>
-        <div>
-            {{ form_start(form) }}
+    <main id="update-hangout">
+        <h1> Modifier une sortie</h1>
+        <div class="content">
+            <div id="hangout">
 
-            <div id="update_hangout">
-                {{ form_row(form.hangout.name) }}
-                {{ form_row(form.hangout.startingDate) }}
-                {{ form_row(form.hangout.registrationDeadline) }}
-                {{ form_row(form.hangout.nbInscriptionsMax) }}
-                {{ form_row(form.hangout.duration) }}
-                {{ form_row(form.hangout.description) }}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                <div class="hangout-grid">
+                    <div class="left-column">
+                        {{ form_row(form.hangout.name) }}
+                        {{ form_row(form.hangout.startingDate) }}
+                        {{ form_row(form.hangout.registrationDeadline) }}
+                        {{ form_row(form.hangout.duration) }}
+                        {{ form_row(form.hangout.nbInscriptionsMax) }}
+                        {{ form_row(form.hangout.description) }}
+                        {{ form_row(form.spot.name,{ 'label': false, 'attr': { 'style': 'display:none' } }) }}
+                        {{ form_row(form.spot.address,{ 'label': false, 'attr': { 'style': 'display:none' } }) }}
+                    </div>
+                    <div class="right-column">
+                        <div class="spot-select">
+                            {{ form_row(form.hangout.spot) }}<br>
+                            <a href="{{ path('spot_create') }}" id="btn-spot-create">+</a>
+                        </div>
+                        <div class="spot-hangout">
+                            <div id="spot-info">
+                                <p>Address : <span id="spot-address">{{ spotForm.address }}</span></p>
+                                <p>City : <span id="spot-city">{{ spotForm.city.name }}</span></p>
+                                <p>Zip Code : <span id="spot-zip-code">{{ spotForm.city.zipCode }}</span></p>
+                            </div>
+                            {{ form_row  (form.spot.latitude) }}
+                            {{ form_row  (form.spot.longitude) }}
+                            {{ form_row(form._token) }}
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="submit">Valider</button>
+                        {{ form_row(form.publish) }}
+                        <a  href="{{ path('hangout_delete', {'id': id}) }}">
+                            <button>Supprimer la sortie</button>
+                        </a>
+                        <a href="{{ path('hangout_index') }}">
+                            <button>Annuler</button>
+{#                        </a>#}
+                    </div>
+
+                    {{ form_end(form, {'render_rest': false}) }}
+                </div>
             </div>
-            <div id="update_spot">
-                {{ form_row(form.spot.name) }}
-                {{ form_row(form.spot.address) }}
-                {{ form_row(form.spot.latitude) }}
-                {{ form_row(form.spot.longitude) }}
-                {{ form_row(form.spot.zipCode) }}
-                {{ form_row(form.spot.cityName) }}
-            </div>
-            <div>
-            <a href="{{ path('spot_create') }}" id="btn-spot-create">+</a>
-            </div>
-            <button type="submit" class="btn btn-success" >Valider</button>
-            <div>
-
-
-
-                <a href="">
-                    <button class="btn btn-success">Publier la sortie</button>
-                </a>
-                <a href="">
-                    <button class="btn btn-success">Supprimer la sortie</button>
-                </a>
-                <a href="">
-                    <button  class="btn btn-success">Annuler</button>
-                </a>
-            </div>
-
-            {{ form_end(form, {'render_rest': false}) }}
         </div>
     </main>
+    {#                script js pour afficher dynamiquement les adresses du spot #}
+    <script>
+
+        const spotSelect = document.getElementById("{{ form.hangout.spot.vars.id }}");
+        console.log('spotSelect:', spotSelect);
+        const spotLatInput = document.getElementById("{{ form.spot.latitude.vars.id }}");
+        const spotLngInput = document.getElementById("{{ form.spot.longitude.vars.id }}");
+        const spotInfoDiv = document.getElementById("spot-info");
+        const spotAddressSpan = document.getElementById("spot-address");
+        const spotZipCodeSpan = document.getElementById("spot-zip-code");
+        const spotCitySpan = document.getElementById("spot-city");
+
+        // Liste des spots avec leurs infos (rendu côté client)
+        const spotsData = {
+            {% for spot in spotALL %}
+            "{{ spot.id }}": {
+                "address": "{{ spot.address|e('js') }}",
+                "zipCode": "{{ spot.city.zipCode }}",
+                "city": "{{ spot.city.name }}",
+                "lat": "{{ spot.latitude }}",
+                "lng": "{{ spot.longitude }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        spotSelect.addEventListener("change", function () {
+            const selectedId = this.value;
+            const data = spotsData[selectedId];
+
+            if (data) {
+                spotAddressSpan.textContent = data.address;
+                spotZipCodeSpan.textContent = data.zipCode;
+                spotCitySpan.textContent = data.city;
+                spotLatInput.value = data.lat;
+                spotLngInput.value = data.lng;
+                spotInfoDiv.style.display = "block";
+            } else {
+                spotInfoDiv.style.display = "none";
+            }
+        });
+
+    </script>
 {% endblock %}
 
 
