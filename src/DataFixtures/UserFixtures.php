@@ -37,15 +37,14 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
                 $user->setAdmin(1); // Le 1er est admin
                 $user->setActive(1);
-            }
-            if ($i == 1) {
+            }elseif ($i == 1) {
                 $user->setPseudo('User');
                 $user->setFirstName('User');
                 $user->setLastName('User');
                 $user->setMail('user@user.user');
                 $user->setPhoneNumber('0102030405');
                 $user->setImage(null); // ou une URL image random avec $faker->imageUrl()
-                $user->setAdmin(1); // Le 1er est admin
+                $user->setAdmin(0); // Le 1er est admin
                 $user->setActive(1);
             } else {
                 $user->setPseudo($faker->unique()->userName());

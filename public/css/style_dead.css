@@ -145,6 +145,10 @@ button {
     cursor: pointer;
 }
 
+.btn-primary:hover {
+    background-color: #f0f0f0;
+}
+
 #btn-spot-create {
     background-color: #fff;
     color: #1a1a1a;
@@ -155,9 +159,7 @@ button {
     font-weight: bold;
     text-decoration: none;
 }
-.btn-primary:hover {
-    background-color: #f0f0f0;
-}
+
 #btn-spot-create:hover {
     background-color: #2980b9;
 }
