@@ -150,7 +150,8 @@ public function load(ObjectManager $manager): void
             //Si l'on veut se limiter aux villes où se situent les campus.
             foreach ($cityPlaces as $placeData) {
                 $spot = new Spot();
-                $cityIndex = rand(0, 19);
+                $campusCount = count(CampusFixtures::CAMPUSNAMES);
+                $cityIndex = rand(0, $campusCount - 1);
                 $spot->setCity($this->getReference(CityFixtures::CITY_REFERENCE_PREFIX . $cityIndex, CITY::class));
                 $spot->setName($placeData['name']);
                 $spot->setAddress($placeData['address']);
