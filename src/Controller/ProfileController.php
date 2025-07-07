@@ -28,6 +28,7 @@ final class ProfileController extends AbstractController
     {
         $user = $userRepository->find($id);
 
+
         return $this->render('profile/show-profile.html.twig', ['user' => $user]);
     }
 
@@ -74,7 +75,7 @@ final class ProfileController extends AbstractController
 
                     $this->addFlash('success', 'Image mise à jour avec succès !');
                 } catch (FileException $e) {
-                    $this->addFlash('danger', 'Error, picture can\'t be loaded');
+                    $this->addFlash('danger', 'Erreur lors du téléchargement de l\'image, veuillez réessayer');
                 }
             }
         }
@@ -122,12 +123,12 @@ final class ProfileController extends AbstractController
                     $imageFile->move($ImagesDirectory, $newFilename);
                     $user->setImage($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('danger', 'Error: image not uploaded');
+                    $this->addFlash('danger', 'Erreur lors du téléchargement de l\'image, veuillez réessayer');
                     return $this->redirectToRoute('app_profile_update');
                 }
 
                 $entityManager->flush();
-                $this->addFlash('success', 'Avatar updated!');
+                $this->addFlash('success', 'Image téléchargée !');
                 return $this->redirectToRoute('app_profile_update');
             }
         }
@@ -153,11 +154,11 @@ final class ProfileController extends AbstractController
 
                     $entityManager->persist($user);
                     $entityManager->flush();
-                    $this->addFlash('success', 'Profile updated!');
+                    $this->addFlash('success', 'Profil mis à jour !');
                     return $this->redirectToRoute('app_profile_update');
                 }
             } else {
-                $this->addFlash('warning', 'Update failed. Please check your information.');
+                $this->addFlash('warning', 'Mise à jour échouée, merci de vérifier vos informations.');
             }
 
             return $this->redirectToRoute('app_profile_update');

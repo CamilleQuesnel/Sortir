@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon profil{% endblock %}
-
 {% block body %}
     <main class="content">
         <section class="hangout">
@@ -10,9 +8,7 @@
             <div class="profile-wrapper">
                 <div class="profile-avatar">
                     <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
-                    {% if app.user.image %}
-                        <p>{{ app.user.image }}</p>
-                    {% endif %}
+
                 </div>
 
                 <div class="profile-info">
