@@ -10,7 +10,9 @@ use App\Form\HangoutForm;
 use App\Form\HangoutWithSpotUpdateForm;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
+use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
+use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,40 +25,69 @@ final class HangoutController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
-        Request           $request,
-        HangoutRepository $hangoutRepository,
-        StatusRepository  $statusRepository,
+        Request                $request,
+        HangoutRepository      $hangoutRepository,
+        StatusRepository       $statusRepository,
+        SpotRepository         $spotRepository,
+        CityRepository         $cityRepository,
+        UserRepository         $userRepository,
+        EntityManagerInterface $entityManager
     ): Response
     {
-        $user = $this->getUser();
 
+        $user = $this->getUser();
+        $userAgent = $request->headers->get('User-Agent');
+        $isMobile = stripos($userAgent, 'Mobile');
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         //Verification date des sorties
         $today = new DateTimeImmutable('today');
         $nextMonth = $today->modify('+1 month');
 
+
         foreach ($hangouts as $sortie) {
-            if ($sortie->getStartingDate() < $today && $sortie->getStatus()->getLabel() !== 'Passée') {
+            $label = $sortie->getStatus()->getLabel();
+
+            if ($label !== 'Passée' && $sortie->getStartingDate() < $today) {
                 $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
                 $sortie->setStatus($statusPassee);
             }
-            if ($sortie->getStartingDate() < $nextMonth && $sortie->getStatus()->getLabel() === 'Passée') {
+            if ($label === 'Passée' && $sortie->getStartingDate() < $nextMonth) {
                 $statusArchivee = $statusRepository->findOneBy(['label' => 'Archivée']);
                 $sortie->setStatus($statusArchivee);
             }
-        }
+            if ($label !== 'Passée' && $sortie->getRegistrationDeadline() < $today) {
+                $statusPassee = $statusRepository->findOneBy(['label' => 'Fermée']);
+                $sortie->setStatus($statusPassee);
+            }
+            $entityManager->persist($sortie);
 
+        }
+        $entityManager->flush();
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $filters = $form->getData();
         }
-        $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
+        if ($isMobile) {
+            //todo Afficher que les sorties ou l'utilisateur et inscrit
+            $campus = $userRepository->find($user->getId())->getCampus();
+            $filters['campus'] = $campus;
+            $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
+            foreach ($hangouts as $hangout) {
+
+                $cityName = $hangout->getSpot()?->getCity()?->getName() ?? 'Inconnue';
+            }
+
+        } else {
+            $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
+        }
+
 
         return $this->render('hangout/index.html.twig', [
             'hangouts' => $hangouts,
             'user' => $user,
+            'isMobile' => $isMobile,
             'form' => $form->createView(),
         ]);
     }

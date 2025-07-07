@@ -4,12 +4,13 @@
 
 {% block body %}
     <main id="hangout_main">
+
         <div id="hangout_date">
             <p>Date du jour : {{ "now"|date("d/m/Y") }}</p>
             <p>Participant : {{ app.user.firstName|capitalize }} {{ app.user.lastName|first|capitalize }}.</p>
         </div>
         <div class="filters_and_results">
-            <section>
+            <section id="section_filter">
                 {{ form_start(form) }}
                 <div class="filters">
                     <div id="form_filters">
@@ -62,22 +63,30 @@
                         <tr>
                             <th>Nom de la sortie</th>
                             <th>Date de la sortie</th>
-                            <th>Clôture</th>
-                            <th>Inscrits / places</th>
-                            <th>État</th>
-                            <th>Inscrit</th>
-                            <th>Organisateur</th>
-                            <th>Campus</th>
-                            <th>Actions</th>
+                            {% if not isMobile %}
+                                <th>Clôture</th>
+                                <th>Inscrits / places</th>
+                                <th>État</th>
+                                <th>Inscrit</th>
+                                <th>Organisateur</th>
+                                <th>Campus</th>
+                                <th>Actions</th>
+                            {% endif %}
+
+
                         </tr>
                         </thead>
                         <tbody>
                         {% for sortie in hangouts %}
                             <tr>
-                                <td id="col-name">{{ sortie.name }}</td>
-                                <td id="col-date">{{ sortie.startingDate|date('d/m/Y H:i') }}</td>
+                            <td id="col-name">{{ sortie.name }}</td>
+                            <td id="col-date">{{ sortie.startingDate|date('d/m/Y H:i') }}</td>
+                            {% if not isMobile %}
+
                                 <td id="col-deadline">{{ sortie.registrationDeadline|date('d/m/Y') }}</td>
-                                <td id="col-inscriptions"><a href="{{ path('app_profile_update') }}">{{ sortie.users|length }}/{{ sortie.nbInscriptionsMax }}</a></td>
+                                <td id="col-inscriptions"><a
+                                        href="{{ path('app_profile_update') }}">{{ sortie.users|length }}
+                                        /{{ sortie.nbInscriptionsMax }}</a></td>
                                 <td id="col-status">{{ sortie.status.label }}</td>
                                 <td id="col-is-registered">
                                     {% if app.user in sortie.users %}
@@ -88,39 +97,52 @@
                                 <td id="col-campus">{{ sortie.campus }}</td>
                                 <td id="col-actions">
                                     {% if sortie.status.label != 'Archivée' %}
-                                        <a href="{{ path('hangout_details', {'id': sortie.id}) }}" class="action-link view">Afficher</a>
+                                        <a href="{{ path('hangout_details', {'id': sortie.id}) }}"
+                                           class="action-link view">Afficher</a>
                                     {% endif %}
                                     {% if sortie.status.label == 'Annulée' and sortie.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}" class="action-link edit">Modifier</a>
+                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                           class="action-link edit">Modifier</a>
                                     {% endif %}
                                     {% if sortie.status.label == 'Créée' and sortie.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}" class="action-link edit">Modifier</a>
-                                        <a href="{{ path('hangout_publish', {'id': sortie.id}) }}" class="action-link publish">Publier</a>
-                                        <a href="{{ path('hangout_delete', {'id': sortie.id}) }}" class="action-link cancel">Annuler</a>
+                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                           class="action-link edit">Modifier</a>
+                                        <a href="{{ path('hangout_publish', {'id': sortie.id}) }}"
+                                           class="action-link publish">Publier</a>
+                                        <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                           class="action-link cancel">Annuler</a>
                                     {% elseif sortie.status.label == 'Ouverte' %}
                                         {% if sortie.organizer == app.user %}
-                                            <a href="{{ path('hangout_update', {'id': sortie.id}) }}" class="action-link edit">Modifier</a>
-                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}" class="action-link cancel">Annuler</a>
+                                            <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                               class="action-link edit">Modifier</a>
+                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                               class="action-link cancel">Annuler</a>
                                         {% endif %}
                                         {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}" class="action-link unsubscribe">Se désister</a>
+                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                               class="action-link unsubscribe">Se désister</a>
                                         {% else %}
-                                            <a href="{{ path('hangout_subscribe', {'id': sortie.id}) }}" class="action-link subscribe">S'inscrire</a>
+                                            <a href="{{ path('hangout_subscribe', {'id': sortie.id}) }}"
+                                               class="action-link subscribe">S'inscrire</a>
                                         {% endif %}
                                     {% elseif sortie.status.label == 'Fermée' %}
                                         {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}" class="action-link unsubscribe">Se désister</a>
+                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                               class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
                                         {% if sortie.organizer == app.user %}
-                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}" class="action-link cancel">Annuler</a>
+                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                               class="action-link cancel">Annuler</a>
                                         {% endif %}
                                     {% elseif sortie.status.label == 'En cours' %}
                                         {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}" class="action-link unsubscribe">Se désister</a>
+                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                               class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                            </tr>
+                                </tr>
+                            {% endif %}
                         {% else %}
                             <tr>
                                 <td colspan="9">Aucune sortie trouvée.</td>
@@ -132,9 +154,11 @@
             </div>
 
 
-            <a href="{{ path('hangout_publish') }}"><button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button></a>
+            <a href="{{ path('hangout_publish') }}">
+                <button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button>
+            </a>
 
-            </div>
+        </div>
         </div>
 
     </main>
