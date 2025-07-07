@@ -37,7 +37,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             // Récupération de l'image (grande version)
             $imageUrl = $data['results'][0]['picture']['large']; // taille large/medium/thumbnail
 
-            // récuperation des infos utiles pour le projet
+             //récuperation des infos utiles pour le projet
             $speudo=$data['results'][0]['login']['username'];
             $firstName=$data['results'][0]['name']['first'];
             $lastName=$data['results'][0]['name']['last'];
@@ -85,6 +85,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 $user->setMail($mail);
                 $user->setPhoneNumber($phoneNumber);
                 $user->setImage($image);
+//                $user->setPseudo($faker->userName());
+//                $user->setFirstName($faker->FirstName());
+//                $user->setLastName($faker->LastName());
+//                $user->setMail($faker->Email());
+//                $user->setPhoneNumber($faker->phoneNumber());
+//                $user->setImage(null);
                 $user->setAdmin(0);
                 $user->setActive($faker->boolean());
             }
@@ -96,7 +102,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $user->setRoles($i === 0 ? ['ROLE_ADMIN'] : ['ROLE_USER']);
 
             // Campus au hasard
-            $campusCount = count(CampusFixtures::$campusNames);
+            $campusCount = count(CampusFixtures::CAMPUSNAMES);
             $campusIndex = rand(0, $campusCount - 1);
             $campusReference = CampusFixtures::CAMPUS_REFERENCE_PREFIX . $campusIndex;
 
