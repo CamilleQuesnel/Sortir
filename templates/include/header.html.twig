@@ -13,14 +13,12 @@
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">VILLE</a></p>
-                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">SITES</a></p>
+                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">CAMPUS</a></p>
                 {% endif %}
-                <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">ACCEUIL</a></p>
+                <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">ACCUEIL</a></p>
                 <p class="custom-nav-item"><a href="{{ path('app_profile') }}">MON PROFIL</a></p>
-{#                <p class="custom-nav-item"><a href="{{ path('hangout_publish') }}">Créer une sortie</a></p>#}
                 <p class="custom-nav-item"><a href="{{ path('app_logout') }}">SE DÉCONNECTER</a></p>
-{#            {% else %}#}
-{#                <p class="custom-nav-item"><a href="{{ path('app_register') }}">Register</a></p>#}
+
             {% endif %}
         </div>
     </nav>

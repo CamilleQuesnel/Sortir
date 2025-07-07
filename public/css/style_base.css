@@ -31,6 +31,52 @@ h1 {
 footer {
 
 }
+/* ===========FLASH MESSAGE=============*/
+.flash-container {
+    margin: 1em auto;
+    max-width: 600px;
+    padding: 0 1em;
+}
+
+.flash {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-family: sans-serif;
+    font-size: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    animation: fade-in 0.4s ease-out;
+}
+
+.flash-success {
+    background-color: #4caf50; /* vert */
+}
+
+.flash-error {
+    background-color: #f44336; /* rouge */
+}
+
+.flash-warning {
+    background-color: #ff9800; /* orange */
+}
+
+.flash-info {
+    background-color: #2196f3; /* bleu */
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===========FIN FLASH MESSAGE=============*/
 
 input[type="text"],
 input[type="password"] {
@@ -137,13 +183,15 @@ button {
 }
 
 .results a {
-    color: #4CEBF0;
+    color: #014983;
+    font-weight: bold;
     text-decoration: none;
 }
 
-.results a:hover {
-    text-decoration: underline;
+.results a:hover{
+    color: #4CEBF0;
 }
+
 
 
 .btn-primary {
@@ -156,13 +204,27 @@ button {
     cursor: pointer;
 }
 
+
+#hangout_form_campus,
+#hangout_form_dateFrom,
+#hangout_form_outputNameContains,
+#hangout_form_dateTo
+{
+    height: 40px;
+    padding: 0 0.8rem;
+    font-size: 16px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+
 #btn-spot-create {
     background-color: #fff;
     color: #1a1a1a;
     border: #1a1a1a 1px solid;
-    padding: 0.25em 0.5em;
+    padding: 10px 10px;
     display: inline-block;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: bold;
     text-decoration: none;
 }
@@ -383,6 +445,7 @@ button {
 
 #create-hangout input[type="text"],
 #create-hangout input[type="datetime-local"],
+#create-hangout input[type="date"],
 #create-hangout input[type="number"],
 #create-hangout textarea,
 #create-hangout select {
