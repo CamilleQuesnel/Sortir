@@ -144,7 +144,6 @@ public const PLACES= [
 ];
 public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('fr_FR');
         $i=0;
         foreach (self::PLACES as $cityName => $cityPlaces) {
             //Si l'on veut se limiter aux villes où se situent les campus.

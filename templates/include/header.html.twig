@@ -9,7 +9,7 @@
                 <a href="{{ path('hangout_index') }}">Sortir.com</a>
             </div>
         </div>
-        <div class="custom-menu">
+        <div class="custom-menu" id="login_link">
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">VILLE</a></p>
