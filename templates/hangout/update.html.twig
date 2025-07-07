@@ -44,19 +44,20 @@
                     <div class="action-buttons">
                         <button type="submit">Valider</button>
                         {{ form_row(form.publish) }}
-                        <a  href="{{ path('hangout_delete', {'id': id}) }}">
+                        <a href="{{ path('hangout_delete', {'id': id}) }}">
                             <button>Supprimer la sortie</button>
                         </a>
                         <a href="{{ path('hangout_index') }}">
                             <button>Annuler</button>
-{#                        </a>#}
+                        </a>
                     </div>
-
                     {{ form_end(form, {'render_rest': false}) }}
                 </div>
             </div>
         </div>
     </main>
+{% endblock %}
+{% block javascripts %}
     {#                script js pour afficher dynamiquement les adresses du spot #}
     <script>
 

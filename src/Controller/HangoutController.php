@@ -2,22 +2,17 @@
 
 namespace App\Controller;
 
-use App\DTO\UpdateHangoutDTO;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Entity\User;
 use App\Form\CreateHangoutForm;
 use App\Form\HangoutForm;
 use App\Form\HangoutWithSpotUpdateForm;
-use App\Form\SpotForm;
-use App\Form\UpdateHangoutForm;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
-use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Metadata\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

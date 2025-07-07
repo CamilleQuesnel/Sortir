@@ -782,16 +782,4 @@ button {
     }
 }
 
-/*!* ====== RESPONSIVE PUBLISH HANGOUT ====== *!*/
-/*@media (max-width: 768px) {*/
-/*    .hangout-grid {*/
-/*        grid-template-columns: 1fr;*/
-/*    }*/
-
-/*    .spot-select {*/
-/*        flex-direction: column;*/
-/*        align-items: flex-start;*/
-/*    }*/
-/*}*/
-
 
