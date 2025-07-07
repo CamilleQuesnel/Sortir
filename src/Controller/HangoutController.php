@@ -43,7 +43,6 @@ final class HangoutController extends AbstractController
         $today = new DateTimeImmutable('today');
         $nextMonth = $today->modify('+1 month');
 
-
         foreach ($hangouts as $sortie) {
             $label = $sortie->getStatus()->getLabel();
 
@@ -117,14 +116,17 @@ final class HangoutController extends AbstractController
 
             if ($createHangoutForm->get('publish')->isClicked()) {
                 $status = $statusRepository->findOneBy(['label' => 'Ouverte']);//quand l'organisateur clique sur publier la sortie
+                $this->addFlash('success', "La sortie a bien été publiée.");
             } else {
                 $status = $statusRepository->findOneBy(['label' => 'Créée']);//quand l'organisateur clique sur enregistrer elle est juste créée
+                $this->addFlash('success', "La sortie a bien été enregistrée. Pensez à la publier.");
             }
 
             $hangout->setStatus($status);
 
             $entityManager->persist($hangout);
             $entityManager->flush();
+
             return $this->redirectToRoute('hangout_index');
         }
 
@@ -145,7 +147,7 @@ final class HangoutController extends AbstractController
 
 
         if (!$hangout) {
-            $this->addFlash('danger', 'Unable to find Hangout entity.');
+            $this->addFlash('danger', 'Impossible de trouver la sortie.');
             return $this->redirectToRoute('hangout_index');
         }
         if ($hangout->getStatus()->getLabel() === 'Archivee' or $hangout->getStatus()->getLabel() === 'Passée') {
@@ -165,7 +167,7 @@ final class HangoutController extends AbstractController
     {
         $hangout = $hangoutRepository->find($id);
         if (!$hangout) {
-            $this->addFlash('danger', 'Unable to find Hangout entity.');
+            $this->addFlash('danger', 'Impossible de trouver la sortie.');
             return $this->redirectToRoute('hangout_index');
         }
         $users = $hangout->getUsers();
@@ -395,7 +397,7 @@ final class HangoutController extends AbstractController
             $entityManager->flush();// Doctrine détecte les changements et les sauvegarde
 
             // Optionnel : message flash pour confirmation
-            $this->addFlash('success', 'Hangout mis à jour avec succès !');
+            $this->addFlash('success', 'Sortie mise à jour avec succès !');
             return $this->redirectToRoute('hangout_index');
 
         }

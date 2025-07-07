@@ -1,8 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier mon profil{% endblock %}
-
 {% block body %}
+    <div class="flash-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash-{{ label }}">
+
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
     <h1 id="profile-h1">Modifier mon profil - {{ app.user.pseudo |capitalize }}</h1>
 
     <div class="profile-wrapper">
