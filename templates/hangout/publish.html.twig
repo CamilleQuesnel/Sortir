@@ -1,4 +1,22 @@
 {% extends 'base.html.twig' %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/create-hangout.js') }}" defer></script>
+    <script>
+        window.spotSelectId = "{{ createHangoutForm.spot.vars.id }}";
+        window.spotsData = {
+            {% for spot in spots %}
+            '{{ spot.id }}': {
+                "address": "{{ spot.address|e('js') }}",
+                "lat": "{{ spot.latitude }}",
+                "lng": "{{ spot.longitude }}",
+                "zipCode": "{{ spot.city.zipCode }}",
+                "city": "{{ spot.city.name }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+    </script>
+{% endblock %}
 
 {% block body %}
     <main id="create-hangout">
@@ -16,7 +34,6 @@
                         {{ form_row(createHangoutForm.duration) }}
                         {{ form_row(createHangoutForm.nbInscriptionsMax) }}
                         {{ form_row(createHangoutForm.description) }}
-{#                        {{ form_row(createHangoutForm.organizer) }}#}
                     </div>
 
                     <div class="right-column">
@@ -48,42 +65,5 @@
             </div>
         </div>
 
-        <script>
-            const spotSelect = document.getElementById("{{ createHangoutForm.spot.vars.id }}");
-            const spotInfoDiv = document.getElementById("spot-info");
-            const spotAddressSpan = document.getElementById("spot-address");
-            const spotLatSpan = document.getElementById("spot-lat");
-            const spotLngSpan = document.getElementById("spot-lng");
-            const spotZipCodeSpan = document.getElementById("spot-zip-code");
-            const spotCitySpan = document.getElementById("spot-city");
-
-            const spotsData = {
-                {% for spot in spots %}
-                "{{ spot.id }}": {
-                    "address": "{{ spot.address|e('js') }}",
-                    "lat": "{{ spot.latitude }}",
-                    "lng": "{{ spot.longitude }}",
-                    "zipCode": "{{ spot.city.zipCode }}",
-                    "city": "{{ spot.city.name }}"
-                }{% if not loop.last %},{% endif %}
-                {% endfor %}
-            };
-
-            spotSelect.addEventListener("change", function () {
-                const selectedId = this.value;
-                const data = spotsData[selectedId];
-
-                if (data) {
-                    spotAddressSpan.textContent = data.address;
-                    spotLatSpan.textContent = data.lat;
-                    spotLngSpan.textContent = data.lng;
-                    spotZipCodeSpan.textContent = data.zipCode;
-                    spotCitySpan.textContent = data.city;
-                    spotInfoDiv.style.display = "block";
-                } else {
-                    spotInfoDiv.style.display = "none";
-                }
-            });
-        </script>
     </main>
 {% endblock %}
