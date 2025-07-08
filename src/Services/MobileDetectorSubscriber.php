@@ -32,7 +32,7 @@ class MobileDetectorSubscriber implements EventSubscriberInterface
         }
 
         // Partage avec tous les templates Twig
-        $this->twig->addGlobal('isMobile', true);
+        $this->twig->addGlobal('isMobile', $isMobile); //Mettre true pour simuler un mobile
     }
 
     public static function getSubscribedEvents(): array
