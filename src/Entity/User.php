@@ -39,16 +39,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
 
-    #[Assert\NotBlank(message: 'Please enter a password')]
-    #[Assert\Length(
-        min: 8,
-        max: 4096,
-        minMessage: 'Your password should be at least {{ limit }} characters',
-    )]
-    #[Assert\Regex(
-        pattern: '/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}/',
-        message: 'Your password must include at least one uppercase letter, one lowercase letter, one digit and one special character'
-    )]
     #[ORM\Column]
     private ?string $password = null;
 
