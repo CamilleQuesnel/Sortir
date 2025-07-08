@@ -11,69 +11,76 @@
             {% endfor %}
         {% endfor %}
     </div>
-
-
     <main id="hangout_main">
-
+        {% if not isMobile %}
         <div id="hangout_date">
             <p>Date du jour : {{ "now"|date("d/m/Y") }}</p>
             <p>Participant : {{ app.user.firstName|capitalize }} {{ app.user.lastName|first|capitalize }}.</p>
         </div>
         <div class="filters_and_results">
-            <section id="section_filter">
-                {{ form_start(form) }}
-                <div class="filters">
-                    <div id="form_filters">
-                        <h3>Filtrer les sorties</h3>
-                        <div>
-                            {{ form_label(form.campus) }}
-                            {{ form_widget(form.campus) }}
+                {{ dump(isMobile) }}
+                <section id="section_filter">
+                    {{ form_start(form) }}
+                    <div class="filters">
+                        <div id="form_filters">
+                            <h3>Filtrer les sorties</h3>
+                            <div>
+                                {{ form_label(form.campus) }}
+                                {{ form_widget(form.campus) }}
+                            </div>
+                            <div>
+                                {{ form_label(form.outputNameContains) }}
+                                {{ form_widget(form.outputNameContains) }}
+                            </div>
+                            <div>
+                                {{ form_label(form.dateFrom) }}
+                                {{ form_widget(form.dateFrom) }}
+                                {{ form_label(form.dateTo) }}
+                                {{ form_widget(form.dateTo) }}
+                            </div>
                         </div>
-                        <div>
-                            {{ form_label(form.outputNameContains) }}
-                            {{ form_widget(form.outputNameContains) }}
+                        <div id="form_select">
+                            <div>
+                                {{ form_widget(form.isOrganizer) }}
+                                {{ form_label(form.isOrganizer) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.isRegistered) }}
+                                {{ form_label(form.isRegistered) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.isNotRegistered) }}
+                                {{ form_label(form.isNotRegistered) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.isPast) }}
+                                {{ form_label(form.isPast) }}
+                            </div>
                         </div>
-                        <div>
-                            {{ form_label(form.dateFrom) }}
-                            {{ form_widget(form.dateFrom) }}
-                            {{ form_label(form.dateTo) }}
-                            {{ form_widget(form.dateTo) }}
-                        </div>
-                    </div>
-                    <div id="form_select">
-                        <div>
-                            {{ form_widget(form.isOrganizer) }}
-                            {{ form_label(form.isOrganizer) }}
-                        </div>
-                        <div>
-                            {{ form_widget(form.isRegistered) }}
-                            {{ form_label(form.isRegistered) }}
-                        </div>
-                        <div>
-                            {{ form_widget(form.isNotRegistered) }}
-                            {{ form_label(form.isNotRegistered) }}
-                        </div>
-                        <div>
-                            {{ form_widget(form.isPast) }}
-                            {{ form_label(form.isPast) }}
-                        </div>
-                    </div>
 
-                    <div id="btn-search">
-                        {{ form_row(form.search) }}
+                        <div id="btn-search">
+                            {{ form_row(form.search) }}
+                        </div>
                     </div>
-                </div>
-                {{ form_end(form) }}
+                    {{ form_end(form) }}
 
-            </section>
+                </section>
+            {% endif %}
+
+            {% if isMobile %}
+                <h1>Mes sorties :</h1>
+            {% endif %}
             <div class="results">
+
                 <section class="custom-results ">
                     <table class="custom-table ">
                         <thead>
                         <tr>
                             <th>Nom de la sortie</th>
                             <th>Date de la sortie</th>
-                            {% if not isMobile %}
+                            {% if isMobile %}
+                                <th>Lieu</th>
+                            {% else %}
                                 <th>Clôture</th>
                                 <th>Inscrits / places</th>
                                 <th>État</th>
@@ -82,71 +89,83 @@
                                 <th>Campus</th>
                                 <th>Actions</th>
                             {% endif %}
-
-
                         </tr>
                         </thead>
                         <tbody>
-                        {% for sortie in hangouts %}
+                        {% for item in hangoutWithCity %}
                             <tr>
-                            <td id="col-name">{{ sortie.name }}</td>
-                            <td id="col-date">{{ sortie.startingDate|date('d/m/Y H:i') }}</td>
-                            {% if not isMobile %}
+                            <td id="col-name">
+                                {% if isMobile %}
+                                <a href="{{ path('hangout_details', {'id': item.hangout.id}) }}">
+                                    {% endif %}
+                                    {{ item.hangout.name }}
+                                    {% if isMobile %}
+                                </a>
+                                {% endif %}
+                            </td>
 
-                                <td id="col-deadline">{{ sortie.registrationDeadline|date('d/m/Y') }}</td>
+
+
+
+
+                            <td id="col-date">{{ item.hangout.startingDate|date('d/m/Y H:i') }}</td>
+                            {% if isMobile %}
+                                <td id="col-lieu">{{ item.city }}</td>
+                            {% else %}
+                                <td id="col-deadline">{{ item.hangout.registrationDeadline|date('d/m/Y') }}</td>
                                 <td id="col-inscriptions"><a
-                                        href="{{ path('app_profile_update') }}">{{ sortie.users|length }}
-                                        /{{ sortie.nbInscriptionsMax }}</a></td>
-                                <td id="col-status">{{ sortie.status.label }}</td>
+                                        href="{{ path('app_profile_update') }}">{{ item.hangout.users|length }}
+                                        /{{ item.hangout.nbInscriptionsMax }}</a></td>
+                                <td id="col-status">{{ item.hangout.status.label }}</td>
                                 <td id="col-is-registered">
-                                    {% if app.user in sortie.users %}
+                                    {% if app.user in item.hangout.users %}
                                         X
                                     {% endif %}
                                 </td>
-                                <td id="col-organizer">{{ sortie.organizer.firstname }} {{ sortie.organizer.lastname }}</td>
-                                <td id="col-campus">{{ sortie.campus }}</td>
+                                <td id="col-organizer">{{ item.hangout.organizer.firstname }} {{ item.hangout.organizer.lastname }}</td>
+                                <td id="col-campus">{{ item.hangout.campus }}</td>
                                 <td id="col-actions">
-                                    {% if sortie.status.label != 'Archivée' %}
-                                        <a href="{{ path('hangout_details', {'id': sortie.id}) }}"
+                                    {% if item.hangout.status.label != 'Archivée' %}
+                                        <a href="{{ path('hangout_details', {'id': item.hangout.id}) }}"
                                            class="action-link view">Afficher</a>
                                     {% endif %}
-                                    {% if sortie.status.label == 'Annulée' and sortie.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                    {% if item.hangout.status.label == 'Annulée' and item.hangout.organizer == app.user %}
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
                                            class="action-link edit">Modifier</a>
                                     {% endif %}
-                                    {% if sortie.status.label == 'Créée' and sortie.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                    {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user %}
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
                                            class="action-link edit">Modifier</a>
-                                        <a href="{{ path('hangout_publish', {'id': sortie.id}) }}"
+                                        <a href="{{ path('hangout_publish', {'id': item.hangout.id}) }}"
                                            class="action-link publish">Publier</a>
-                                        <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                        <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                            class="action-link cancel">Annuler</a>
-                                    {% elseif sortie.status.label == 'Ouverte' %}
-                                        {% if sortie.organizer == app.user %}
-                                            <a href="{{ path('hangout_update', {'id': sortie.id}) }}"
+                                    {% elseif item.hangout.status.label == 'Ouverte' %}
+                                        {% if item.hangout.organizer == app.user %}
+                                            <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
                                                class="action-link edit">Modifier</a>
-                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                            <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                                class="action-link cancel">Annuler</a>
                                         {% endif %}
-                                        {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                        {% if app.user in item.hangout.users %}
+                                            <a href="{{ path('hangout_unsubscribe', {'id': item.hangout.id}) }}"
                                                class="action-link unsubscribe">Se désister</a>
                                         {% else %}
-                                            <a href="{{ path('hangout_subscribe', {'id': sortie.id}) }}"
+                                            <a href="{{ path('hangout_subscribe', {'id': item.hangout.id}) }}"
                                                class="action-link subscribe">S'inscrire</a>
                                         {% endif %}
-                                    {% elseif sortie.status.label == 'Fermée' %}
-                                        {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                    {% elseif item.hangout.status.label == 'Fermée' %}
+                                        {% if app.user in item.hangout.users %}
+                                            <a href="{{ path('hangout_unsubscribe', {'id': item.hangout.id}) }}"
                                                class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
-                                        {% if sortie.organizer == app.user %}
-                                            <a href="{{ path('hangout_delete', {'id': sortie.id}) }}"
+                                        {% if item.hangout.organizer == app.user %}
+                                            <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                                class="action-link cancel">Annuler</a>
                                         {% endif %}
-                                    {% elseif sortie.status.label == 'En cours' %}
-                                        {% if app.user in sortie.users %}
-                                            <a href="{{ path('hangout_unsubscribe', {'id': sortie.id}) }}"
+                                    {% elseif item.hangout.status.label == 'En cours' %}
+                                        {% if app.user in item.hangout.users %}
+                                            <a href="{{ path('hangout_unsubscribe', {'id': item.hangout.id}) }}"
                                                class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
                                     {% endif %}
@@ -163,15 +182,13 @@
                 </section>
             </div>
 
-
-            <a href="{{ path('hangout_publish') }}">
-                <button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button>
-            </a>
-
+            {% if not isMobile %}
+                <a href="{{ path('hangout_publish') }}">
+                    <button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button>
+                </a>
+            {% endif %}
         </div>
-        </div>
+
 
     </main>
 {% endblock %}
-
-

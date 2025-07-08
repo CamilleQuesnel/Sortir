@@ -13,6 +13,7 @@ use App\Repository\HangoutRepository;
 use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
+use App\Services\MobileService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,11 +27,9 @@ final class HangoutController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
         Request                $request,
+        MobileService $mobileService,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
-        SpotRepository         $spotRepository,
-        CityRepository         $cityRepository,
-        UserRepository         $userRepository,
         EntityManagerInterface $entityManager
     ): Response
     {
@@ -68,25 +67,27 @@ final class HangoutController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $filters = $form->getData();
         }
-        if ($isMobile) {
-            //todo Afficher que les sorties ou l'utilisateur et inscrit
-            $campus = $userRepository->find($user->getId())->getCampus();
-            $filters['campus'] = $campus;
+        $hangoutWithCity = [];
+
+
+        if ($mobileService->isMobile($request)) {
+            $filters['isRegistered'] = true;
             $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
-            foreach ($hangouts as $hangout) {
-
-                $cityName = $hangout->getSpot()?->getCity()?->getName() ?? 'Inconnue';
-            }
-
         } else {
             $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         }
 
-
+        foreach ($hangouts as $hangout) {
+            $cityName = $hangout->getSpot()?->getCity()?->getName() ?? 'Inconnue';
+            $hangoutWithCity[] =
+                [
+                    'hangout' => $hangout,
+                    'city' => $cityName,
+                ];
+        }
         return $this->render('hangout/index.html.twig', [
-            'hangouts' => $hangouts,
+            'hangoutWithCity' => $hangoutWithCity,
             'user' => $user,
-            'isMobile' => $isMobile,
             'form' => $form->createView(),
         ]);
     }
@@ -95,10 +96,16 @@ final class HangoutController extends AbstractController
     #[Route('/publish', name: 'publish', methods: ['GET', 'POST'])]
     public function publish(
         Request                $request,
+        MobileService          $mobileService,
         EntityManagerInterface $entityManager,
         StatusRepository       $statusRepository
     ): Response
-    {//transmission des spots
+    {
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+        //transmission des spots
         $spots = $entityManager->getRepository(Spot::class)->findAll();
 
 
@@ -143,6 +150,7 @@ final class HangoutController extends AbstractController
         HangoutRepository $hangoutRepository,
     ): Response
     {
+
         $hangout = $hangoutRepository->find($id);
 
 
@@ -162,9 +170,14 @@ final class HangoutController extends AbstractController
     #[Route('/{id}/list_users', name: 'list_users', methods: ['GET'])]
     public function listUsers(
         int               $id,
+        MobileService     $mobileService,
+        Request           $request,
         HangoutRepository $hangoutRepository,
     ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $hangout = $hangoutRepository->find($id);
         if (!$hangout) {
             $this->addFlash('danger', 'Impossible de trouver la sortie.');
@@ -179,10 +192,17 @@ final class HangoutController extends AbstractController
     #[Route('/{id}/unsubscribe', name: 'unsubscribe', methods: ['GET', 'POST'])]
     public function unsubscribe(
         int                    $id,
+        Request                $request,
+        MobileService          $mobileService,
         HangoutRepository      $hangoutRepository,
         EntityManagerInterface $entityManager
     ): Response
     {
+
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $hangout = $hangoutRepository->find($id);
 
         if (!$hangout) {
@@ -231,10 +251,16 @@ final class HangoutController extends AbstractController
     #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'Post'])]
     public function subscribe(
         int                    $id,
+        Request                $request,
+        MobileService          $mobileService,
         HangoutRepository      $hangoutRepository,
         EntityManagerInterface $entityManager,
     ): Response
     {
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
 
         $hangout = $hangoutRepository->find($id);
         if (!$hangout) {
@@ -287,11 +313,18 @@ final class HangoutController extends AbstractController
     #[Route('/{id}/delete', name: 'delete', methods: ['GET', 'POST'])]
     public function delete(
         int                    $id,
+        Request                $request,
+        MobileService          $mobileService,
         EntityManagerInterface $entityManager,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository
     ): Response
     {
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+
         $hangout = $hangoutRepository->find($id);
 
         if (!$hangout) {
@@ -336,8 +369,12 @@ final class HangoutController extends AbstractController
         CityRepository         $cityRepository,
         EntityManagerInterface $entityManager,
         Request                $request,
+        MobileService          $mobileService,
     ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $hangout = $hangoutRepository->find($id);// récuperation de l'entité en bdd
         if (!$hangout) {
             throw $this->createNotFoundException("Le sortie n'existe pas");

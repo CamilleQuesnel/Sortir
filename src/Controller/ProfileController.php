@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Form\ProfileImageFormType;
 use App\Form\UpdateProfileForm;
 use App\Repository\UserRepository;
+use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -24,17 +25,27 @@ final class ProfileController extends AbstractController
 //rajout du requirement pour éviter le conflit de route
     public function profileId(
         int $id,
-        UserRepository $userRepository) : Response
+        UserRepository $userRepository,
+        Request $request,
+        MobileService $mobileService,
+    ) : Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $user = $userRepository->find($id);
-
-
         return $this->render('profile/show-profile.html.twig', ['user' => $user]);
     }
 
     #[Route('/profile', name: 'app_profile', methods: ['GET'])]
-    public function profile(Request $request): Response
+    public function profile(
+        Request $request,
+        MobileService $mobileService,
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $user = $this->getUser();
         $imageForm = $this->createForm(ProfileImageFormType::class);
 
