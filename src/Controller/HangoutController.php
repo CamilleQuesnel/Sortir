@@ -30,6 +30,7 @@ final class HangoutController extends AbstractController
         MobileService $mobileService,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
+        UserRepository         $userRepository,
         EntityManagerInterface $entityManager
     ): Response
     {
@@ -88,7 +89,7 @@ final class HangoutController extends AbstractController
         return $this->render('hangout/index.html.twig', [
             'hangoutWithCity' => $hangoutWithCity,
             'user' => $user,
-            'form' => $form->createView(),
+            'form' => $form
         ]);
     }
 
@@ -139,18 +140,17 @@ final class HangoutController extends AbstractController
 
         return $this->render('hangout/publish.html.twig',
             [
-                'createHangoutForm' => $createHangoutForm->createView(),
+                'createHangoutForm' => $createHangoutForm,
                 'spots' => $spots,
             ]);
     }
 
-    #[Route('/{id}', name: 'details', methods: ['GET', 'Post'])]
+    #[Route('/{id}', name: 'details', methods: ['GET', 'POST'])]
     public function details(
         int               $id,
         HangoutRepository $hangoutRepository,
     ): Response
     {
-
         $hangout = $hangoutRepository->find($id);
 
 
@@ -248,7 +248,7 @@ final class HangoutController extends AbstractController
     }
 
 
-    #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'Post'])]
+    #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'POST'])]
     public function subscribe(
         int                    $id,
         Request                $request,
@@ -442,7 +442,7 @@ final class HangoutController extends AbstractController
 
         return $this->render('hangout/update.html.twig', [
             'id' => $id,
-            'form' => $form->createView(),
+            'form' => $form,
             'spotForm' => $spot,
             'spotALL' => $spots
         ]);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Sortir.com{% endblock %}</title>
@@ -14,16 +14,27 @@
         <link rel="stylesheet" href="{{ asset('css/smartphone.css') }}">
     {% endblock %}
 
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
 
 </head>
 <body>
+
 {% include('include/header.html.twig') %}
+    <div class="flash-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 {% block body %}
 
 {% endblock %}
-{% block javascripts %}
-    {% block importmap %}{{ importmap('app') }}{% endblock %}
-{% endblock %}
+
 {% include('include/footer.html.twig') %}
 </body>
 </html>

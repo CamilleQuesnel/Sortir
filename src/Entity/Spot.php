@@ -6,6 +6,7 @@ use App\Repository\SpotRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SpotRepository::class)]
 class Spot
@@ -16,15 +17,35 @@ class Spot
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le nom du lieu est obligatoire.")]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "Le nom du lieu ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $address = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Regex(
+        pattern: "/^-?\d{1,3}\.\d+$/",
+        message: "La latitude doit être un nombre décimal valide.",
+        match: true
+    )]
     private ?string $latitude = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Regex(
+        pattern: "/^-?\d{1,3}\.\d+$/",
+        message: "La longitude doit être un nombre décimal valide.",
+        match: true
+    )]
     private ?string $longitude = null;
 
     /**

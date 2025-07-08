@@ -130,11 +130,11 @@
                                            class="action-link view">Afficher</a>
                                     {% endif %}
                                     {% if item.hangout.status.label == 'Annulée' and item.hangout.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                     {% endif %}
                                     {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                         <a href="{{ path('hangout_publish', {'id': item.hangout.id}) }}"
                                            class="action-link publish">Publier</a>
@@ -142,7 +142,7 @@
                                            class="action-link cancel">Annuler</a>
                                     {% elseif item.hangout.status.label == 'Ouverte' %}
                                         {% if item.hangout.organizer == app.user %}
-                                            <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                            <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                                class="action-link edit">Modifier</a>
                                             <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                                class="action-link cancel">Annuler</a>
@@ -183,12 +183,13 @@
             </div>
 
             {% if not isMobile %}
-                <a href="{{ path('hangout_publish') }}">
+                <a href="{{ path('hangout_publish') }}"  data-turbo="false">
                     <button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button>
                 </a>
             {% endif %}
         </div>
 
-
     </main>
 {% endblock %}
+
+

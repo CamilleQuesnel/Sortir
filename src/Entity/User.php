@@ -14,18 +14,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+//contraintes d'unicité
 #[UniqueEntity(fields: ['mail'], message: 'Cet email est déjà utilisé.')]
+#[UniqueEntity(fields: ['pseudo'], message: 'Ce pseudo est déjà utilisé.')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PSEUDO', fields: ['pseudo'])]
-#[UniqueEntity(fields: ['pseudo'], message: 'There is already an account with this pseudo')]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[Assert\NotBlank(message: 'Please enter your pseudo')]
-    #[Assert\Length(max: 180, maxMessage: 'Too long ! 180 characters at most !')]
-    #[Assert\Length(min: 2, minMessage: 'Too short ! 2 characters at most !')]
+    #[Assert\NotBlank(message: 'Veuillez saisir un pseudo.')]
+    #[Assert\Length(
+        min: 2,
+        max: 180,
+        minMessage: 'Le pseudo doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le pseudo ne peut pas dépasser {{ limit }} caractères.'
+    )]
     #[ORM\Column(length: 180)]
     private ?string $pseudo = null;
 
@@ -40,43 +46,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
 
     #[ORM\Column]
+    //ne pas mettre d'assert ici ça se passe dans le formulaire sur plainpassword
     private ?string $password = null;
 
-    #[Assert\NotBlank(message: 'Please enter your first name')]
+    #[Assert\NotBlank(message: 'Veuillez saisir votre prénom.')]
     #[Assert\Length(
         min: 2,
         max: 100,
-        minMessage: 'Your first name must be at least {{ limit }} characters long',
-        maxMessage: 'Your first name cannot be longer than {{ limit }} characters'
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Assert\Regex(
         pattern: '/^[\p{L}\'\- ]+$/u',
-        message: 'Your first name can only contain letters, spaces, apostrophes and hyphens'
+        message: 'Le prénom ne peut contenir que des lettres, des espaces, des apostrophes ou des tirets.'
     )]
     #[ORM\Column(length: 50)]
     private ?string $firstName = null;
-    #[Assert\NotBlank(message: 'Please enter your last name')]
+    #[Assert\NotBlank(message: 'Veuillez saisir votre nom de famille.')]
     #[Assert\Length(
         min: 2,
         max: 100,
-        minMessage: 'Your last name must be at least {{ limit }} characters long',
-        maxMessage: 'Your last name cannot be longer than {{ limit }} characters'
+        minMessage: 'Le nom de famille doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de famille ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Assert\Regex(
         pattern: '/^[\p{L}\'\- ]+$/u',
-        message: 'Your last name can only contain letters, spaces, apostrophes and hyphens'
+        message: 'Le nom de famille ne peut contenir que des lettres, des espaces, des apostrophes ou des tirets.'
     )]
     #[ORM\Column(length: 50)]
     private ?string $lastName = null;
 
-    #[Assert\NotBlank(message: 'Please enter your email address')]
+    #[Assert\NotBlank(message: 'Veuillez saisir une adresse email.')]
     #[Assert\Email(
-        message: 'The email "{{ value }}" is not a valid email.',
+        message: 'L\'adresse "{{ value }}" n\'est pas valide.',
         mode: 'html5'
     )]
     #[Assert\Length(
-        max: 180,
-        maxMessage: 'The email should not be longer than {{ limit }} characters'
+        max: 100,
+        maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[ORM\Column(length: 100, unique: true)]
     private ?string $mail = null;
@@ -85,16 +92,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $image = null;
 
 
-    #[Assert\NotBlank(message: 'Please enter your phone number')]
+    #[Assert\NotBlank(message: 'Veuillez saisir un numéro de téléphone.')]
     #[Assert\Length(
         min: 10,
         max: 15,
-        minMessage: 'The phone number must be at least {{ limit }} digits',
-        maxMessage: 'The phone number cannot exceed {{ limit }} digits'
+        minMessage: 'Le numéro de téléphone doit contenir au moins {{ limit }} chiffres.',
+        maxMessage: 'Le numéro de téléphone ne peut pas dépasser {{ limit }} chiffres.'
     )]
     #[Assert\Regex(
         pattern: '/^\+?[0-9]{10,15}$/',
-        message: 'Please enter a valid phone number (digits only, with optional +)'
+        message: 'Veuillez entrer un numéro de téléphone valide (chiffres uniquement, avec un "+" éventuel).'
     )]
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $phoneNumber = null;
@@ -119,6 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'user')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Le campus est obligatoire.')]
     private ?Campus $campus = null;
 
     public function __construct()

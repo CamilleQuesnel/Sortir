@@ -25,29 +25,32 @@ class UpdateProfileForm extends AbstractType
             ->add('pseudo')
 
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'Password : ',
+                'label' => 'Mot de passe : ',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
                     new Length([
                         'min' => 8,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
                         'max' => 4096,
+                        'maxMessage' => 'Le mot de passe est trop long.',
                     ]),
                     new Regex([
                         'pattern' => '/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}/',
-                        'message' => 'Your password must include at least one uppercase letter, one lowercase letter, one digit and one special character',
+                        'message' => 'Le mot de passe doit contenir au moins : une majuscule, une minuscule, un chiffre et un caractère spécial.',
                     ]),
                 ],
             ])
 
 
+
             ->add('confirmPassword', PasswordType::class, [
-                'label' => 'Confirm Password : ',
+                'label' => 'Confirmation du mot de passe : ',
                 'mapped' => false,
                 'required' => false,
-                'attr' => ['placeholder' => 'Password confirmation'],
+                'attr' => ['placeholder' => 'Confirmation du mot de passe'],
             ])
+
 
 
             ->add('firstName')

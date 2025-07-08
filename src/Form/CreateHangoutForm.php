@@ -46,13 +46,6 @@ class CreateHangoutForm extends AbstractType
                 'label' => 'Description et infos'
             ])
 
-//            ->add('organizer', TextType::class, [
-//                'mapped' => false,
-//                'data' => $options['user'] ? $options['user']->getPseudo() : '',
-//                'disabled' => true,
-//                'label' => 'Organisateur',
-//                'attr' => ['class' => 'btn-action']
-//            ])
             ->add('spot', EntityType::class, [
                 'class' => Spot::class,
                 'choice_label' => 'name',

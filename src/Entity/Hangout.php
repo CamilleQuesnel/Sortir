@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HangoutRepository::class)]
 class Hangout
@@ -17,21 +18,48 @@ class Hangout
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Le nom de la sortie est obligatoire.")]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "Le nom de la sortie ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La date de début est obligatoire.")]
+    #[Assert\Type(type: \DateTime::class, message: "La date de début doit être une date valide.")]
+    #[Assert\GreaterThan("now", message: "La date de début doit être dans le futur.")]
     private ?\DateTime $startingDate = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La date limite d'inscription est obligatoire.")]
+    #[Assert\Type(type: \DateTime::class, message: "La date limite doit être une date valide.")]
+    #[Assert\LessThan(
+        propertyPath: "startingDate",
+        message: "La date limite d'inscription doit être avant la date de début."
+    )]
     private ?\DateTime $registrationDeadline = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La durée est obligatoire.")]
+    #[Assert\Positive(message: "La durée doit être un nombre positif.")]
     private ?int $duration = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le nombre maximum d'inscriptions est obligatoire.")]
+    #[Assert\Positive(message: "Le nombre d'inscriptions doit être un entier positif.")]
+    #[Assert\Range(
+        notInRangeMessage: "Le nombre de participants doit être compris entre {{ min }} et {{ max }}.",
+        min: 2,
+        max: 1000
+    )]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 1000,
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     /**

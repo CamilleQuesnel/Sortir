@@ -1,22 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un lieu{% endblock %}
-
 {% block body %}
     <main>
         <h1>Créer un nouveau lieu</h1>
+        <div class="profile-wrapper">
 
         {{ form_start(form) }}
+            <div class="profile-info-row">
         {{ form_row(form.name) }}
+            </div>
+                <div class="profile-info-row">
         {{ form_row(form.address) }}
+                </div>
+            <div class="profile-info-row">
         {{ form_row(form.latitude) }}
+            </div>
+            <div class="profile-info-row">
         {{ form_row(form.longitude) }}
-
+            </div>
+            <div class="profile-info-row">
         {{ form_row(form.zipCode) }}
+            </div>
+            <div class="profile-info-row">
         {{ form_row(form.cityName) }}
-        <button type="submit" class="btn btn-primary">Enregistrer le lieu</button>
-        <a href="{{ path('hangout_publish') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary" data-turbo="false">Enregistrer le lieu</button>
 
+                    <a href="{{ path('hangout_publish') }}" class="btn btn-secondary">Annuler</a>
+                </div>
         {{ form_end(form) }}
+        </div>
     </main>
 {% endblock %}

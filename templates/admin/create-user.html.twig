@@ -1,88 +1,59 @@
 {% extends 'base.html.twig' %}
-{% form_theme registrationForm 'form_div_layout.html.twig' %}
-
 
 {% block body %}
-    <style>
-        .form-error-message {
-            color: red;
-            margin-top: 5px;
-            font-size: 0.9rem;
-        }
 
-        ul li {
-            list-style: none;
-            background-color:red;
-        }
-    </style>
-    <div class="flash-container">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="flash flash-{{ label }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </div>
 
     <h1 id="profile-h1">Créer un nouvel utilisateur</h1>
 
     <div class="profile-wrapper">
         <div class="profile-info">
-            {{ form_start(registrationForm, {
-                action: path('create_user'),
-                method: 'POST'
-            }) }}
-            {{ form_errors(registrationForm) }}
+            {{ form_start(createUser) }}
+            {{ form_errors(createUser) }}
 
             <div class="profile-info-row">
-{#                {{ form_row(registrationForm.pseudo) }}#}
-                {{ form_label(registrationForm.pseudo) }}
-                {{ form_widget(registrationForm.pseudo) }}
-                {{ form_errors(registrationForm.pseudo) }}
+                {{ form_row(createUser.pseudo) }}
+
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.firstName) }}
+                {{ form_row(createUser.firstName) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.lastName) }}
+                {{ form_row(createUser.lastName) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.phoneNumber) }}
+                {{ form_row(createUser.phoneNumber) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.mail) }}
+                {{ form_row(createUser.mail) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.plainPassword) }}
+                {{ form_row(createUser.plainPassword) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.confirmPassword) }}
+                {{ form_row(createUser.confirmPassword) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.campus) }}
+                {{ form_row(createUser.campus) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.active) }}
+                {{ form_row(createUser.active) }}
             </div>
 
             <div class="profile-info-row">
-                {{ form_row(registrationForm.isAdmin) }}
+                {{ form_row(createUser.isAdmin) }}
             </div>
             <div class="form-buttons">
-{#                {{ form_row(registrationForm._token) }}#}
-                {{ form_row(registrationForm.save) }}
+                {{ form_row(createUser.save) }}
             </div>
-            {{ dump(registrationForm) }}
-            {{ form_end(registrationForm) }}
+            {{ form_end(createUser) }}
 
         </div>
     </div>

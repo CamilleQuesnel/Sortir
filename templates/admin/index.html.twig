@@ -5,9 +5,9 @@
 {% block body %}
 
     <h1>Panneau administrateur</h1>
-
-    <a href="#">Créer un utilisateur</a><br>
-    <a href="#">Gérer les utilisateurs</a>
-
-
+    <div class="form-buttons">
+        <a href="{{ path('admin_upload_csv') }}" class="btn-action">Télécharger une liste d'utilisateurs</a>
+        <a href="{{ path('admin_create_user') }}" class="btn-action">Créer un utilisateur</a>
+{#        <a href="#" class="btn-action">Gérer les utilisateurs</a>#}
+    </div>
 {% endblock %}

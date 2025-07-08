@@ -50,7 +50,7 @@ final class ProfileController extends AbstractController
         $imageForm = $this->createForm(ProfileImageFormType::class);
 
         return $this->render('profile/index.html.twig', [
-            'profileImageForm' => $imageForm->createView(),
+            'profileImageForm' => $imageForm,
             'user' => $user
         ]);
     }
@@ -93,13 +93,6 @@ final class ProfileController extends AbstractController
 
         return $this->redirectToRoute('app_profile');
     }
-
-
-
-
-
-
-
 
     #[Route('/profile/update', name: 'app_profile_update', methods: ['POST', 'GET'])]
     public function profileUpdate(
@@ -155,7 +148,7 @@ final class ProfileController extends AbstractController
                 $confirmPassword = $updateProfileForm->get('confirmPassword')->getData();
 
                 if ($plainPassword !== $confirmPassword) {
-                    $updateProfileForm->get('confirmPassword')->addError(new FormError('Passwords do not match.'));
+                    $updateProfileForm->get('confirmPassword')->addError(new FormError('Les deux mots de passe ne correspondent pas, merci de vérifier votre saisie.'));
 
                 } else {
                     if ($plainPassword) {

@@ -2,8 +2,12 @@
 
 {% block body %}
     <h1>Chargement de participants par CSV</h1>
-    <div>
-        <div class="card-body">
+    <div class="csv-text">
+        Pour télécharger une liste de nouveaux utilisateurs sur le serveur, sélectionnez un fichier CSV qui contient ses colonnes : pseudo, firstName (prénom), lastName (nom),
+        mail (email), phoneNumber (numéro de téléphone). <br>
+        Le campus de Rennes sera attribué par défaut, ainsi que le mot de passe "password" qui pourront être changé par l'utilisateur après une première connexion directement
+        dans leur profil.
+        <div class="form-buttons">
             {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
             {{ form_end(form) }}
 
