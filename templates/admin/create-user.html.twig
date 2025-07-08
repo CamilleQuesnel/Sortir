@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+{% form_theme registrationForm 'form_div_layout.html.twig' %}
+
+
+{% block body %}
+    <style>
+        .form-error-message {
+            color: red;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        ul li {
+            list-style: none;
+            background-color:red;
+        }
+    </style>
+    <div class="flash-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <h1 id="profile-h1">Créer un nouvel utilisateur</h1>
+
+    <div class="profile-wrapper">
+        <div class="profile-info">
+            {{ form_start(registrationForm, {
+                action: path('create_user'),
+                method: 'POST'
+            }) }}
+            {{ form_errors(registrationForm) }}
+
+            <div class="profile-info-row">
+{#                {{ form_row(registrationForm.pseudo) }}#}
+                {{ form_label(registrationForm.pseudo) }}
+                {{ form_widget(registrationForm.pseudo) }}
+                {{ form_errors(registrationForm.pseudo) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.firstName) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.lastName) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.phoneNumber) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.mail) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.plainPassword) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.confirmPassword) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.campus) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.active) }}
+            </div>
+
+            <div class="profile-info-row">
+                {{ form_row(registrationForm.isAdmin) }}
+            </div>
+            <div class="form-buttons">
+{#                {{ form_row(registrationForm._token) }}#}
+                {{ form_row(registrationForm.save) }}
+            </div>
+            {{ dump(registrationForm) }}
+            {{ form_end(registrationForm) }}
+
+        </div>
+    </div>
+{% endblock %}
