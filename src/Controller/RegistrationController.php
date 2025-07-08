@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationForm;
 use App\Security\SecurityControllerAuthenticator;
+use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -17,8 +18,16 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request                     $request,
+        MobileService               $mobileService,
+        UserPasswordHasherInterface $userPasswordHasher,
+        Security                    $security,
+        EntityManagerInterface      $entityManager): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $user = new User();
         $form = $this->createForm(RegistrationForm::class, $user);
         $form->handleRequest($request);

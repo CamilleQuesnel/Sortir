@@ -14,11 +14,9 @@
     .left-column
     {
         text-align: start;
+        max-width: 90%;
     }
-    /*.actions{*/
-    /*    display: flex;*/
-    /*    flex-direction: row;*/
-    /*}*/
+
     #login_link,
     #hangout_date,
     #section_filter {

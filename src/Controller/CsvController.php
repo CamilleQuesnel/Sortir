@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\MobileService;
 use League\Csv\Exception;
 use League\Csv\InvalidArgument;
 use League\Csv\SyntaxError;
@@ -27,8 +28,16 @@ class CsvController extends AbstractController
      */
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/upload-csv', name: 'upload_csv')]
-    public function upload(Request $request, CsvImporter $csvImporter): Response
+    public function upload(
+        Request $request,
+        CsvImporter $csvImporter,
+        MobileService $mobileService,
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+
         // Create a simple form for file upload
         $form = $this->createFormBuilder()
             ->add('csv_file', FileType::class, ['label' => 'Sélectionnez un fichier csv'])

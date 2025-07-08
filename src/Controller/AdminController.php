@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\CreateUserFormType;
 use App\Form\RegistrationForm;
+use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -16,9 +17,14 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin')]
-    public function index(): Response
+    public function index(
+        Request $request,
+        MobileService $mobileService,
+    ): Response
     {
-
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         return $this->render('admin/index.html.twig', []);
     }
 
@@ -26,9 +32,15 @@ final class AdminController extends AbstractController
     #[Route('/admin/create-user', name: 'create_user')]
     public function createUser(
         Request $request,
+        MobileService $mobileService,
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+
         $user = new User();
         $form = $this->createForm(CreateUserFormType::class, $user);
         $form->handleRequest($request);

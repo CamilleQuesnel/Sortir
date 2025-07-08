@@ -6,6 +6,7 @@ use App\Entity\City;
 use App\Entity\Spot;
 use App\Form\CityForm;
 use App\Form\SpotForm;
+use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SpotController extends AbstractController
 {
     #[Route('/spot/new', name: 'spot_create')]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    public function create(
+        Request $request,
+        MobileService $mobileService,
+        EntityManagerInterface $em
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $spot = new Spot();
         $form = $this->createForm(SpotForm::class, $spot);
         $form->handleRequest($request);
