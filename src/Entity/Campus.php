@@ -17,7 +17,7 @@ class Campus
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Please choose a Campus.')]
+    #[Assert\NotBlank(message: 'Merci de choisir un campus.')]
     private ?string $name = null;
 
     /**

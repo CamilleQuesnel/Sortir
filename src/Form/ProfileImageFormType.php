@@ -26,15 +26,23 @@ class ProfileImageFormType extends AbstractType
             'constraints' => [
                 new File([
                     'maxSize' => '2M',
-                    'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-                    'mimeTypesMessage' => 'Upload image (jpg/png/gif/webp)',
-                ]),
+                    'maxSizeMessage' => 'L\'image ne doit pas dépasser 2 Mo.',
+                    'mimeTypes' => [
+                        'image/jpeg',
+                        'image/png',
+                        'image/webp',
+                        'image/gif',
+                    ],
+                    'mimeTypesMessage' => 'Formats autorisés : JPG, PNG, WEBP ou GIF.',
+                    'uploadErrorMessage' => 'Une erreur est survenue lors de l\'upload du fichier.',
+                    'notReadableMessage' => 'Le fichier n\'a pas pu être lu. Vérifiez sa validité.',
+                ])
             ],
         ]);
     }
 
 
-    public function configureOptions(OptionsResolver $resolver)
+        public function configureOptions(OptionsResolver $resolver)
     {
     }
 }

@@ -13,10 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin')]
+    #[IsGranted('ROLE_ADMIN')]
+
     public function index(
         Request $request,
         MobileService $mobileService,
@@ -29,7 +32,9 @@ final class AdminController extends AbstractController
     }
 
 
-    #[Route('/admin/create-user', name: 'create_user')]
+
+    #[Route('/admin/create-user', name: 'admin_create_user')]
+    #[IsGranted('ROLE_ADMIN')]
     public function createUser(
         Request $request,
         MobileService $mobileService,
@@ -44,39 +49,34 @@ final class AdminController extends AbstractController
         $user = new User();
         $form = $this->createForm(CreateUserFormType::class, $user);
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
-            $confirmPassword = $form->get('confirmPassword')->getData();
 
-            if ($plainPassword !== $confirmPassword) {
-                $form->get('confirmPassword')->addError(new FormError('Les mots de passe ne correspondent pas.'));
-            }
+            // Hash du mot de passe
+            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
 
-            if ($form->isValid()) {
-                foreach ($form->getErrors(true) as $error) {
-                    dump($error->getMessage());
-                }
-                // Hash du mot de passe
-                $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-                $user->setPassword($hashedPassword);
+            // Admin ?
+            $isAdmin = $form->get('isAdmin')->getData();
+            $user->setRoles($isAdmin ? ['ROLE_ADMIN'] : ['ROLE_USER']);
+            $user->setAdmin($isAdmin ?? false);
 
-                // Admin ?
-                $isAdmin = $form->get('isAdmin')->getData();
-                $user->setRoles($isAdmin ? ['ROLE_ADMIN'] : ['ROLE_USER']);
-                $user->setAdmin($isAdmin ?? false);
+            $entityManager->persist($user);
+            $entityManager->flush();
 
-                $entityManager->persist($user);
-                $entityManager->flush();
+            $this->addFlash('success', 'Utilisateur créé avec succès !');
+            return $this->redirectToRoute('create_user');
+        }
 
-                $this->addFlash('success', 'Utilisateur créé avec succès !');
-                return $this->redirectToRoute('create_user');
-            }
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Le formulaire contient des erreurs !');
 
-            $this->addFlash('danger', 'Merci de corriger les erreurs du formulaire.');
+            $form->get('pseudo')->addError(new FormError('Merci de rentrer un vrai pseudo !'));
         }
 
         return $this->render('admin/create-user.html.twig', [
-            'registrationForm' => $form->createView(),
+            'createUser' => $form,
         ]);
     }
 

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Constraints\File;
 
 class CsvController extends AbstractController
 {
@@ -27,7 +28,7 @@ class CsvController extends AbstractController
      * @throws Exception
      */
     #[IsGranted('ROLE_ADMIN')]
-    #[Route('/upload-csv', name: 'upload_csv')]
+    #[Route('/upload-csv', name: 'admin_upload_csv')]
     public function upload(
         Request $request,
         CsvImporter $csvImporter,
@@ -39,9 +40,25 @@ class CsvController extends AbstractController
         }
 
         // Create a simple form for file upload
-        $form = $this->createFormBuilder()
-            ->add('csv_file', FileType::class, ['label' => 'Sélectionnez un fichier csv'])
-            ->add('submit', SubmitType::class, ['label' => 'Télécharger sur le serveur'])
+        $form = $this->createFormBuilder(null, [
+            'attr' => ['id' => 'upload-csv-form']
+        ])
+            ->add('csv_file', FileType::class, [
+                'label' => 'Sélectionnez un fichier CSV',
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'text/csv',
+                            'text/plain',
+                            'application/vnd.ms-excel', // certains .csv Windows
+                            'application/csv',
+                        ],
+                        'mimeTypesMessage' => 'Le fichier doit être un CSV valide (extension .csv)',
+                    ])
+                ],
+            ])
+            ->add('submit', SubmitType::class, ['label' => 'Télécharger sur le serveur', 'attr' => ['class' => 'btn-action'],] )
             ->getForm();
 
         $form->handleRequest($request);
@@ -57,19 +74,22 @@ class CsvController extends AbstractController
                 try {
                     $csvFile->move($uploadsDirectory, $newFilename);
                 } catch (FileException $e) {
-                    return new Response('Error uploading file: ' . $e->getMessage());
+                    $this->addFlash('error', "erreur durant l'upload". $e->getMessage());
+                    return $this->redirectToRoute('admin_upload_csv');
                 }
 
                 // Process CSV
                 $filePath = $uploadsDirectory . '/' . $newFilename;
                 $data = $csvImporter->import($filePath);
 
-                return new Response('CSV uploaded and processed! Found ' . count($data) . ' records.');
+                $this->addFlash('success', 'CSV téléchargé, trouvé ' . count($data) . ' nouveaux utilisateurs.');
+
+                return $this->redirectToRoute('admin_upload_csv');
             }
         }
 
         return $this->render('csv/csvUpload.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }
