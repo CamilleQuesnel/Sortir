@@ -104,6 +104,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?bool $active = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $resetRequestedAt = null;
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): void
+    {
+        $this->resetToken = $resetToken;
+    }
+
+    public function getResetRequestedAt(): ?\DateTimeInterface
+    {
+        return $this->resetRequestedAt;
+    }
+
+    public function setResetRequestedAt(?\DateTimeInterface $resetRequestedAt): void
+    {
+        $this->resetRequestedAt = $resetRequestedAt;
+    }
 
     /**
      * @var Collection<int, Hangout>
