@@ -118,6 +118,13 @@ final class HangoutController extends AbstractController
 
         $createHangoutForm->handleRequest($request);
         if ($createHangoutForm->isSubmitted() && $createHangoutForm->isValid()) {
+
+            //vérifie que la ville du spot sélectionné est bien activée
+            if (!$hangout->getSpot()->getCity()->isActive()) {
+                $this->addFlash('danger', 'Impossible de créer une sortie dans une ville désactivée.');
+                return $this->redirectToRoute('hangout_publish');
+            }
+
             $hangout->setOrganizer($this->getUser());
 
             $hangout->setCampus($this->getUser()->getCampus());
@@ -408,6 +415,14 @@ final class HangoutController extends AbstractController
         // 4. Valider et sauvegarder
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+
+            // Vérifier si le spot sélectionné est dans une ville désactivée
+            $selectedSpot = $form->get('hangout')->get('spot')->getData();
+            if (!$selectedSpot->getCity()->isActive()) {
+                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
+                return $this->redirectToRoute('hangout_update', ['id' => $id]);
+            }
+
             //test si button publier a ete cliquer
             if ($form->get('publish')->isClicked()) {
                 $hangout->setStatus($statusRepository->findOneBy(['label' => 'Ouverte']));

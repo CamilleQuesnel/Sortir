@@ -42,8 +42,14 @@ final class SpotController extends AbstractController
                 'name' => $cityName
             ]);
 
+            if ($existingCity && !$existingCity->isActive()) {
+                $this->addFlash('error', 'Impossible de créer un lieu dans une ville désactivée. Contactez l\'administrateur.');
+                return $this->redirectToRoute('spot_create');
+            }
+
             if ($existingCity) {
                 $spot->setCity($existingCity);
+
             } else {
                 $newCity = new City();
                 $newCity->setZipCode($zipCode);

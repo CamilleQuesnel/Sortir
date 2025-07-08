@@ -1,18 +1,40 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Liste des villes{% endblock %}
+
 {% block body %}
-<section>
-    <table>
+    <h1>Villes actives</h1>
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Code postal</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for city in cities %}
             <tr>
                 <td>{{ city.name }}</td>
                 <td>{{ city.zipCode }}</td>
-                <td>Modifier - Supprimer</td>
+                <td>
+                    <a href="{{ path('admin_city_edit', {'id': city.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+
+                    <form action="{{ path('admin_city_soft_delete', {'id': city.id}) }}" method="post" onsubmit="return confirm('Supprimer cette ville ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ city.id) }}">
+                        <button class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">Aucune ville active.</td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
-</section>
 
-
+    <a href="{{ path('admin_city_add') }}" class="btn btn-success">+ Ajouter une ville</a>
 {% endblock %}
-

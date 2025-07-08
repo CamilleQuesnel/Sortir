@@ -28,6 +28,21 @@ class City
     #[Assert\Length(min:1, minMessage: 'Le code postal doit faire au moins {{ limit }} caractères.')]
     private ?string $zipCode = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
+
     /**
      * @var Collection<int, Spot>
      */

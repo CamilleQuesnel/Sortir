@@ -17,6 +17,16 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
+        // Liste de tous les spots disponibles
+        $allSpots = [];
+        for ($j = 0; $j < 20; $j++) {
+            /** @var Spot $spot */
+            $spot = $this->getReference(SpotFixtures::SPOT_REFERENCE_PREFIX . $j, Spot::class);
+
+
+            $allSpots[] = $spot;
+        }
+
         for ($i = 0; $i < 50; $i++) {
             $hangout = new Hangout();
             $hangout->setName($faker->catchPhrase());
@@ -24,7 +34,7 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             // Dates réalistes
             $startDate = $faker->dateTimeBetween('+1 days', '+1 month');
             $deadline = (clone $startDate)->modify('-2 days');
-            $duration = rand((1*60),(8*60));
+            $duration = rand(60, 480); // entre 1h et 8h en minutes
 
             $hangout->setStartingDate($startDate);
             $hangout->setRegistrationDeadline($deadline);
@@ -43,19 +53,32 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             // Status (aléatoire)
             $statusCount = count(StatusFixtures::$statuss);
             $statusIndex = rand(0, $statusCount - 1);
-            $statusRef = $campusReference = StatusFixtures::STATUS_REFERENCE_PREFIX . $statusIndex;
-            $statusEntity = $this->getReference($statusRef,Status::class);
+            $statusRef = StatusFixtures::STATUS_REFERENCE_PREFIX . $statusIndex;
+            $statusEntity = $this->getReference($statusRef, Status::class);
             $hangout->setStatus($statusEntity);
 
-            // Spot (aléatoire)
-            $spotIndex = rand(0, 4);
-            $hangout->setSpot($this->getReference(SpotFixtures::SPOT_REFERENCE_PREFIX . $spotIndex,Spot::class));
+            // Spot : 30% avec ville inactive, 70% normal
+            $spot = null;
+            if (random_int(1, 100) <= 30) {
+                // Spots avec villes désactivées
+                $inactiveSpots = array_filter($allSpots, fn(Spot $s) => !$s->getCity()->isActive());
+                if (!empty($inactiveSpots)) {
+                    $spot = $inactiveSpots[array_rand($inactiveSpots)];
+                }
+            }
+
+            // Fallback : spot aléatoire
+            if (!$spot) {
+                $spot = $allSpots[array_rand($allSpots)];
+            }
+
+            $hangout->setSpot($spot);
 
             // Participants (entre 1 et 5)
             $participants = $faker->randomElements(range(0, 9), rand(1, 5));
             foreach ($participants as $participantIndex) {
-                $user = $this->getReference(UserFixtures::USER_REFERENCE_PREFIX . $participantIndex,User::class);
-                $hangout->addUser($user); // M2M
+                $user = $this->getReference(UserFixtures::USER_REFERENCE_PREFIX . $participantIndex, User::class);
+                $hangout->addUser($user);
             }
 
             $manager->persist($hangout);
