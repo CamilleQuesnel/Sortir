@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<section>
+    <table>
+        {% for city in cities %}
+            <tr>
+                <td>{{ city.name }}</td>
+                <td>{{ city.zipCode }}</td>
+                <td>Modifier - Supprimer</td>
+            </tr>
+        {% endfor %}
+    </table>
+</section>
+
+
+{% endblock %}
+
