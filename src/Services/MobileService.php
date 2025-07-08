@@ -13,7 +13,7 @@ class MobileService
             || stripos($userAgent, 'Android') !== false
             || stripos($userAgent, 'iPhone') !== false
             || stripos($userAgent, 'iPad') !== false;
-//       return $isMobile;
-        return true; //TODO Simulation du mobile
+       return $isMobile;
+//        return true; //TODO Simulation du mobile
     }
 }
