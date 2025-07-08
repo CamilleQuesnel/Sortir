@@ -19,9 +19,27 @@
 
             <div class="hangout-grid">
                 <div class="left-column">
+                    {% if isMobile %}
                     <p><strong>Nom de la sortie :</strong> {{ hangout.name }}</p>
                     <p><strong>Date et heure :</strong> {{ hangout.startingDate|date('d/m/Y H:i') }}</p>
-                    <p><strong>Date limite d'inscription :</strong> {{ hangout.registrationDeadline|date('d/m/Y H:i') }}</p>
+                    <p><strong>Ville :</strong> {{ hangout.spot.city.name }}</p>
+                    <p><strong>Lieu :</strong> {{ hangout.spot.name }}</p>
+                    <p><strong>Rue :</strong> {{ hangout.spot.address }}</p>
+                    <p><strong>Code postal :</strong> {{ hangout.spot.city.zipCode }}</p>
+                    <p><strong>Latitude :</strong> {{ hangout.spot.latitude }}</p>
+                    <p><strong>Longitude :</strong> {{ hangout.spot.longitude }}</p>
+                    <p><strong>Date limite d'inscription:</strong> {{ hangout.registrationDeadline|date('d/m/Y H:i') }}
+                    </p>
+                    <p><strong>Nombre de places :</strong> {{ hangout.nbInscriptionsMax }}</p>
+                    {% set hours = hangout.duration // 60 %}
+                    {% set minutes = hangout.duration % 60 %}
+                    <p><strong>Durée :</strong> {{ hours }} h {{ minutes }} min</p>
+                    <p><strong>Description et infos :</strong><br> {{ hangout.description }}</p>
+                    {% else %}
+                    <p><strong>Nom de la sortie :</strong> {{ hangout.name }}</p>
+                    <p><strong>Date et heure :</strong> {{ hangout.startingDate|date('d/m/Y H:i') }}</p>
+                    <p><strong>Date limite d'inscription :</strong> {{ hangout.registrationDeadline|date('d/m/Y H:i') }}
+                    </p>
                     <p><strong>Nombre de places :</strong> {{ hangout.nbInscriptionsMax }}</p>
 
                     {% set hours = hangout.duration // 60 %}
@@ -40,21 +58,41 @@
                     <p><strong>Longitude :</strong> {{ hangout.spot.longitude }}</p>
                 </div>
             </div>
-
-            <h2 id="show-hangout">Liste des participants inscrits :</h2>
+            {% endif %}
+            <h2 id="show-hangout">Liste des {% if not isMobile %}participants{% endif %} inscrits :</h2>
             <section class="results">
                 <table class="custom-table">
                     <thead>
                     <tr>
-                        <th>Pseudo</th>
+                        {% if not isMobile %}
+                            <th>Pseudo</th>
+                        {% endif %}
                         <th>Nom</th>
+                        {% if  isMobile %}
+                            <th>Ville</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for user in users %}
                         <tr>
-                            <td class="participants-name"><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.pseudo }}</a></td>
-                            <td class="participants-name"><a href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.firstname }} {{ user.lastname }}</a></td>
+                            {% if not isMobile %}
+                                <td class="participants-name"><a
+                                        href="{{ path('app_profile_id', {'id': user.id}) }}">{{ user.pseudo }}</a></td>
+                            {% endif %}
+                            <td class="participants-name">
+                                {% if not isMobile %}
+                                <a href="{{ path('app_profile_id', {'id': user.id}) }}">
+                                    {% endif %}
+                                    {{ user.firstname }} {{ user.lastname }}
+                                    {% if not isMobile %}
+                                </a>
+                                {% endif %}
+                            </td>
+                            {% if  isMobile %}
+                                <td class="participants-campus">{{ user.campus }}</td>
+                            {% endif %}
+
                         </tr>
                     {% else %}
                         <tr>
