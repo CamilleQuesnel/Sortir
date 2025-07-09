@@ -1,0 +1,56 @@
+button {
+    margin-top: 20px;
+}
+
+input {
+    margin: 20px;
+    height: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.forgotten_main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.forgotten_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    button {
+        margin-top: 2px;
+    }
+    input {
+        margin: 2px;
+        max-height: 30px;
+    }
+    label{
+        font-size: large;
+        margin-right: 10px ;
+
+    }
+    .forgotten_main {
+        justify-content: start;
+    }
+    .forgotten_form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        flex-wrap: wrap;
+    }
+
+
+}

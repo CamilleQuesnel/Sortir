@@ -17,9 +17,11 @@ class ResetPasswordFormType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(['min' => 6]),
+
                 ],
                 'attr' => [
                     'autocomplete' => 'new-password',
+                    'class' => 'btn-primary',
                 ],
             ]);
     }

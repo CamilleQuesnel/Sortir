@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ForgottenPasswordFormType;
 use App\Form\ResetPasswordFormType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\FormError;
@@ -69,6 +70,7 @@ final class ForgottenPasswordController extends AbstractController
         ]);
     }
     #[Route('/reset-password/{token}', name: 'reset_password')]
+
     public function resetPassword(
         string $token,
         Request $request,
@@ -77,8 +79,10 @@ final class ForgottenPasswordController extends AbstractController
     ): Response {
         $user = $em->getRepository(User::class)->findOneBy(['resetToken' => $token]);
 
-        if (!$user || $user->getResetRequestedAt() < (new \DateTime())->modify('-1 hour')) {
-            $this->addFlash('danger', 'Lien invalide ou expiré.');
+//        if (!$user || $user->getResetRequestedAt() < (new DateTime())->modify('-1 hour')) {
+        if (false)
+        {
+        $this->addFlash('danger', 'Lien invalide ou expiré.');
             return $this->redirectToRoute('app_forgotten_password');
         }
 

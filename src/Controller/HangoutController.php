@@ -30,11 +30,12 @@ final class HangoutController extends AbstractController
         MobileService $mobileService,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response
     {
 
         $user = $this->getUser();
+
         $userAgent = $request->headers->get('User-Agent');
         $isMobile = stripos($userAgent, 'Mobile');
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
@@ -72,6 +73,7 @@ final class HangoutController extends AbstractController
 
         if ($mobileService->isMobile($request)) {
             $filters['isRegistered'] = true;
+            $city =
             $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         } else {
             $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
