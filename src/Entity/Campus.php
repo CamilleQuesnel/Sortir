@@ -20,6 +20,20 @@ class Campus
     #[Assert\NotBlank(message: 'Merci de choisir un campus.')]
     private ?string $name = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
     /**
      * @var Collection<int, Hangout>
      */

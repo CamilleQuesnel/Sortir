@@ -2,12 +2,19 @@
 
 namespace App\Controller;
 
+use App\DataFixtures\StatusFixtures;
 use App\Entity\Campus;
 use App\Entity\City;
+use App\Entity\Hangout;
+use App\Entity\Status;
 use App\Entity\User;
+use App\Form\CampusForm;
 use App\Form\CityForm;
 use App\Form\CreateUserFormType;
+use App\Repository\CampusRepository;
 use App\Repository\CityRepository;
+use App\Repository\HangoutRepository;
+use App\Repository\StatusRepository;
 use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -92,6 +99,7 @@ final class AdminController extends AbstractController
         ]);
     }
     #[Route('/admin/user/{id}/desactivate', name: 'admin_user_deactivate')]
+    #[IsGranted('ROLE_ADMIN')]
     public function deactivateUser(User $user, EntityManagerInterface $em): Response
     {
         $user->setActive(false);
@@ -101,6 +109,7 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin/cites', name: 'admin_cities', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function cites(Request $request, CityRepository $cityRepository): Response
     {
         $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
@@ -109,6 +118,7 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function softDeleteCity(City $city, EntityManagerInterface $em, Request $request): Response
     {
         if ($this->isCsrfTokenValid('delete'.$city->getId(), $request->request->get('_token'))) {
@@ -126,6 +136,7 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin/city/add', name: 'admin_city_add')]
+    #[IsGranted('ROLE_ADMIN')]
     public function addCity(Request $request, EntityManagerInterface $em, CityRepository $cityRepository): Response
     {
         $city = new City();
@@ -161,6 +172,7 @@ final class AdminController extends AbstractController
     }
 
     #[Route('/admin/city/{id}/edit', name: 'admin_city_edit')]
+    #[IsGranted('ROLE_ADMIN')]
     public function editCity(City $city, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(CityForm::class, $city);
@@ -180,13 +192,129 @@ final class AdminController extends AbstractController
 
 
     #[Route('/admin/campus', name: 'admin_campus', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function campus(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $campus = $entityManager->getRepository(Campus::class)->findAll();
 
-        return  $this->render('admin/campus.html.twig', ['campus' => $campus]);
+        $campus = $entityManager->getRepository(Campus::class)->findBy(['isActive' => true]);
+        $search = $request->query->get('search');
+
+        $campusRepository = $entityManager->getRepository(Campus::class);
+
+        if ($search) {
+            $queryBuilder = $campusRepository->createQueryBuilder('c');
+            $queryBuilder->where('c.isActive = true')
+                ->andWhere('c.name LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+            $campus = $queryBuilder->getQuery()->getResult();
+        } else {
+            $campus = $campusRepository->findBy(['isActive' => true]);
+        }
+
+        return $this->render('admin/campus.html.twig', [
+            'campus' => $campus,
+        ]);
+
+//        return $this->render('admin/campus.html.twig', ['campus' => $campus]);
     }
+
+        #[Route('/admin/campus/add', name: 'admin_campus_add')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function addCampus(Request $request, EntityManagerInterface $em, CampusRepository $campusRepository): Response
+    {
+        $campus = new Campus();
+        $form = $this->createForm(CampusForm::class, $campus);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $existing = $campusRepository->findOneBy([
+                'name' => $campus->getName(),
+            ]);
+
+            if ($existing) {
+                if (!$existing->isActive()) {
+                    $existing->setIsActive(true);
+                    $em->flush();
+                    $this->addFlash('success', 'Campus réactivé avec succès.');
+                } else {
+                    $this->addFlash('warning', 'Ce campus est déjà actif.');
+                }
+            } else {
+                $em->persist($campus);
+                $em->flush();
+                $this->addFlash('success', 'Campus ajouté avec succès.');
+            }
+
+            return $this->redirectToRoute('admin_campus');
+        }
+
+        return $this->render('admin/campus_add.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/admin/campus/{id}/edit', name: 'admin_campus_edit')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function editCampus(Campus $campus, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CampusForm::class, $campus);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Le campus a été mis à jour.');
+            return $this->redirectToRoute('admin_campus');
+        }
+
+        return $this->render('admin/campus_edit.html.twig', [
+            'form' => $form,
+            'campus' => $campus,
+        ]);
+    }
+
+    #[Route('/admin/campus/{id}/delete', name: 'admin_campus_soft_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function softDeleteCampus(Campus $campus, HangoutRepository $hangoutRepository, EntityManagerInterface $em, Request $request): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$campus->getId(), $request->request->get('_token'))) {
+            $campus->setIsActive(false);
+            $em->flush();
+            $this->addFlash('success', 'Le campus a été supprimé.');
+        }
+
+        $campus->setIsActive(false);
+
+        // Désactiver tous les utilisateurs liés
+        $campusId = $campus->getId();
+        $users = $em->getRepository(User::class)->findAll();
+
+        foreach ($users as $user) {
+            if ($user->getCampus()->getId() === $campusId) {
+                $user->setActive(false);
+                $hangoutWithCampusDeleted = $em->getRepository(Hangout::class)->findBy(['campus' => $campus]);
+
+                foreach ($hangoutWithCampusDeleted as $h) {
+                    $annuleeStatus = $em->getRepository(Status::class)->findOneBy(['label' => 'Annulée']);
+                    $h->setStatus($annuleeStatus);
+                }
+
+
+
+            };
+
+        }
+
+        $em->flush();
+
+        $this->addFlash('success', 'Le campus a été supprimé.');
+
+        return $this->redirectToRoute('admin_campus');
+    }
+
+
+
     #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteUser(Request $request, User $user, EntityManagerInterface $em): Response
     {
         $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
