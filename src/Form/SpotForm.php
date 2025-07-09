@@ -21,9 +21,11 @@ class SpotForm extends AbstractType
                 'label' => 'Address',
             ])
             ->add('latitude', NumberType::class, [
+                'required' => false,
                 'label' => 'Latitude',
             ])
             ->add('longitude', NumberType::class, [
+                'required' => false,
                 'label' => 'Longitude',
             ])
             ->add('zipCode', TextType::class, [

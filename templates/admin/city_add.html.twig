@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ajouter une nouvelle ville</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.zipCode) }}
+
+    <button class="btn btn-primary">Ajouter la ville</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('admin_cities') }}">← Retour à la liste des villes</a>
+{% endblock %}

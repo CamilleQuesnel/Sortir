@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Campus;
 use App\Entity\City;
 use App\Entity\User;
+use App\Form\CityForm;
 use App\Form\CreateUserFormType;
+use App\Repository\CityRepository;
 use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -98,13 +100,84 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_list_users');
     }
 
-    #[Route('/admin/cites', name: 'admin_cites', methods: ['GET', 'POST'])]
-    public function cites(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/admin/cites', name: 'admin_cities', methods: ['GET', 'POST'])]
+    public function cites(Request $request, CityRepository $cityRepository): Response
     {
-        $cities = $entityManager->getRepository(City::class)->findAll();
+        $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
 
         return  $this->render('admin/cites.html.twig', ['cities' => $cities]);
     }
+
+    #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
+    public function softDeleteCity(City $city, EntityManagerInterface $em, Request $request): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$city->getId(), $request->request->get('_token'))) {
+            $city->setIsActive(false);
+            $em->flush();
+            $this->addFlash('success', 'La ville a été supprimée.');
+        }
+
+        $city->setIsActive(false);
+        $em->flush();
+
+        $this->addFlash('success', 'La ville a été supprimée.');
+
+        return $this->redirectToRoute('admin_cities');
+    }
+
+    #[Route('/admin/city/add', name: 'admin_city_add')]
+    public function addCity(Request $request, EntityManagerInterface $em, CityRepository $cityRepository): Response
+    {
+        $city = new City();
+        $form = $this->createForm(CityForm::class, $city);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $existing = $cityRepository->findOneBy([
+                'name' => $city->getName(),
+                'zipCode' => $city->getZipCode(),
+            ]);
+
+            if ($existing) {
+                if (!$existing->isActive()) {
+                    $existing->setIsActive(true);
+                    $em->flush();
+                    $this->addFlash('success', 'Ville réactivée avec succès.');
+                } else {
+                    $this->addFlash('warning', 'Cette ville est déjà active.');
+                }
+            } else {
+                $em->persist($city);
+                $em->flush();
+                $this->addFlash('success', 'Ville ajoutée avec succès.');
+            }
+
+            return $this->redirectToRoute('admin_cities');
+        }
+
+        return $this->render('admin/city_add.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/admin/city/{id}/edit', name: 'admin_city_edit')]
+    public function editCity(City $city, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(CityForm::class, $city);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'La ville a été mise à jour.');
+            return $this->redirectToRoute('admin_cities');
+        }
+
+        return $this->render('admin/city_edit.html.twig', [
+            'form' => $form,
+            'city' => $city,
+        ]);
+    }
+
 
     #[Route('/admin/campus', name: 'admin_campus', methods: ['GET', 'POST'])]
     public function campus(Request $request, EntityManagerInterface $entityManager): Response
