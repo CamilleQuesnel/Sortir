@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\DataFixtures\StatusFixtures;
 use App\Entity\Campus;
 use App\Entity\City;
 use App\Entity\Hangout;
@@ -14,9 +13,10 @@ use App\Form\CreateUserFormType;
 use App\Repository\CampusRepository;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
-use App\Repository\StatusRepository;
 use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +43,8 @@ final class AdminController extends AbstractController
         return $this->render('admin/index.html.twig', []);
     }
 
+
+    //    ###################### GESTION USERS ######################
     #[Route('/admin/list-users', name: 'admin_list_users')]
     #[IsGranted('ROLE_ADMIN')]
     public function listUsers(Request $request, EntityManagerInterface $entityManager): Response
@@ -108,13 +110,59 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_list_users');
     }
 
-    #[Route('/admin/cites', name: 'admin_cities', methods: ['GET', 'POST'])]
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function deleteUser(Request $request, User $user, EntityManagerInterface $em, HangoutRepository $hangoutRepository): Response
+    {
+        $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
+
+        if (!$this->isCsrfTokenValid($token->getId(), $token->getValue())) {
+            throw $this->createAccessDeniedException('CSRF token invalide');
+        }
+
+        //todo suppr le participant des sorties en query
+        $user = $em->find(User::class, $user->getId());
+
+//        foreach ($user->getHangouts() as $userToDelete) {
+//            $userToDelete->removeParticipant($user);
+//        }
+        //todo annuler la sortie de l'utisateur supprimé
+
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+        return $this->redirectToRoute('admin_list_users');
+    }
+
+//    ###################### CITIES ######################
+
+    #[Route('/admin/cites', name: 'admin_cities', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function cites(Request $request, CityRepository $cityRepository): Response
     {
-        $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
+        $search = $request->query->get('search');
 
-        return  $this->render('admin/cites.html.twig', ['cities' => $cities]);
+        if ($search) {
+            $cities = $cityRepository->createQueryBuilder('c')
+                ->where('c.isActive = true')
+                ->andWhere('c.name LIKE :search')
+                ->setParameter('search', '%' . $search . '%')
+                ->orderBy('c.name', 'ASC')
+                ->getQuery()
+                ->getResult();
+        } else {
+            $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
+        }
+
+        return $this->render('admin/cites.html.twig', [
+            'cities' => $cities,
+        ]);
     }
 
     #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
@@ -191,12 +239,12 @@ final class AdminController extends AbstractController
     }
 
 
+    //    ###################### CAMPUS ######################
+
     #[Route('/admin/campus', name: 'admin_campus', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function campus(Request $request, EntityManagerInterface $entityManager): Response
     {
-
-        $campus = $entityManager->getRepository(Campus::class)->findBy(['isActive' => true]);
         $search = $request->query->get('search');
 
         $campusRepository = $entityManager->getRepository(Campus::class);
@@ -215,7 +263,6 @@ final class AdminController extends AbstractController
             'campus' => $campus,
         ]);
 
-//        return $this->render('admin/campus.html.twig', ['campus' => $campus]);
     }
 
         #[Route('/admin/campus/add', name: 'admin_campus_add')]
@@ -312,23 +359,6 @@ final class AdminController extends AbstractController
     }
 
 
-
-    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function deleteUser(Request $request, User $user, EntityManagerInterface $em): Response
-    {
-        $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
-
-        if (!$this->isCsrfTokenValid($token->getId(), $token->getValue())) {
-            throw $this->createAccessDeniedException('CSRF token invalide');
-        }
-
-        $em->remove($user);
-        $em->flush();
-
-        $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-        return $this->redirectToRoute('admin_list_users');
-    }
 
 }
 
