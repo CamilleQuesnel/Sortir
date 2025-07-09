@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/forgotten.css') }}">
+{% endblock %}
+{% block body %}
+    <main class="forgotten_main">
+        <h1>Mot de passe oublié</h1>
+        <div class="forgotten_form">
+            {{ form_start(form) }}
+            {{ form_row(form.mail) }}
+            <div>
+                <button class="btn btn-action">Envoyer un lien de réinitialisation</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </main>
+{% endblock %}
