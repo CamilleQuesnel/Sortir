@@ -31,9 +31,8 @@ final class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin')]
     #[IsGranted('ROLE_ADMIN')]
-
     public function index(
-        Request $request,
+        Request       $request,
         MobileService $mobileService,
     ): Response
     {
@@ -47,8 +46,12 @@ final class AdminController extends AbstractController
     //    ###################### GESTION USERS ######################
     #[Route('/admin/list-users', name: 'admin_list_users')]
     #[IsGranted('ROLE_ADMIN')]
-    public function listUsers(Request $request, EntityManagerInterface $entityManager): Response
+    public function listUsers(Request $request, EntityManagerInterface $entityManager, MobileService $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $users = $entityManager->getRepository(User::class)->findAll();
 
         return $this->render('admin/list_users.html.twig', ['users' => $users]);
@@ -57,11 +60,12 @@ final class AdminController extends AbstractController
     #[Route('/admin/create-user', name: 'admin_create_user')]
     #[IsGranted('ROLE_ADMIN')]
     public function createUser(
-        Request $request,
-        MobileService $mobileService,
-        EntityManagerInterface $entityManager,
+        Request                     $request,
+        MobileService               $mobileService,
+        EntityManagerInterface      $entityManager,
         UserPasswordHasherInterface $passwordHasher
-    ): Response {
+    ): Response
+    {
 
         if ($mobileService->isMobile($request)) {
             return $this->redirectToRoute('hangout_index');
@@ -100,10 +104,15 @@ final class AdminController extends AbstractController
             'createUser' => $form,
         ]);
     }
+
     #[Route('/admin/user/{id}/desactivate', name: 'admin_user_deactivate')]
     #[IsGranted('ROLE_ADMIN')]
-    public function deactivateUser(User $user, EntityManagerInterface $em): Response
+    public function deactivateUser(User $user, EntityManagerInterface $em, Request $request, MobileService $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $user->setActive(false);
         $em->flush();
         $this->addFlash('success', 'Utilisateur désactivé avec succès.');
@@ -144,8 +153,13 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/cites', name: 'admin_cities', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function cites(Request $request, CityRepository $cityRepository): Response
+    public function cites(
+        Request        $request,
+        CityRepository $cityRepository,
+        MobileService  $mobileService
+    ): Response
     {
+
         $search = $request->query->get('search');
 
         if ($search) {
@@ -163,13 +177,30 @@ final class AdminController extends AbstractController
         return $this->render('admin/cites.html.twig', [
             'cities' => $cities,
         ]);
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+        $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
+
+        return $this->render('admin/cites.html.twig', ['cities' => $cities]);
+
     }
 
     #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function softDeleteCity(City $city, EntityManagerInterface $em, Request $request): Response
+    public function softDeleteCity(
+        City                   $city,
+        EntityManagerInterface $em,
+        Request                $request,
+        MobileService          $mobileService
+    ): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$city->getId(), $request->request->get('_token'))) {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $city->getId(), $request->request->get('_token'))) {
             $city->setIsActive(false);
             $em->flush();
             $this->addFlash('success', 'La ville a été supprimée.');
@@ -185,8 +216,12 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/city/add', name: 'admin_city_add')]
     #[IsGranted('ROLE_ADMIN')]
-    public function addCity(Request $request, EntityManagerInterface $em, CityRepository $cityRepository): Response
+    public function addCity(Request $request, EntityManagerInterface $em, CityRepository $cityRepository, MobileService $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $city = new City();
         $form = $this->createForm(CityForm::class, $city);
         $form->handleRequest($request);
@@ -221,8 +256,12 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/city/{id}/edit', name: 'admin_city_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function editCity(City $city, Request $request, EntityManagerInterface $em): Response
+    public function editCity(City $city, Request $request, EntityManagerInterface $em, MobileService $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $form = $this->createForm(CityForm::class, $city);
         $form->handleRequest($request);
 
@@ -243,8 +282,17 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/campus', name: 'admin_campus', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function campus(Request $request, EntityManagerInterface $entityManager): Response
+    public function campus(Request $request, EntityManagerInterface $entityManager, MobileService $mobileService
+    ): Response
     {
+
+
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+
+        $campus = $entityManager->getRepository(Campus::class)->findBy(['isActive' => true]);
+
         $search = $request->query->get('search');
 
         $campusRepository = $entityManager->getRepository(Campus::class);
@@ -265,10 +313,17 @@ final class AdminController extends AbstractController
 
     }
 
-        #[Route('/admin/campus/add', name: 'admin_campus_add')]
+    #[Route('/admin/campus/add', name: 'admin_campus_add')]
     #[IsGranted('ROLE_ADMIN')]
-    public function addCampus(Request $request, EntityManagerInterface $em, CampusRepository $campusRepository): Response
+    public function addCampus(Request                $request,
+                              EntityManagerInterface $em,
+                              CampusRepository       $campusRepository,
+                              MobileService          $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $campus = new Campus();
         $form = $this->createForm(CampusForm::class, $campus);
         $form->handleRequest($request);
@@ -302,8 +357,12 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/campus/{id}/edit', name: 'admin_campus_edit')]
     #[IsGranted('ROLE_ADMIN')]
-    public function editCampus(Campus $campus, Request $request, EntityManagerInterface $em): Response
+    public function editCampus(Campus $campus, Request $request, EntityManagerInterface $em, MobileService $mobileService
+    ): Response
     {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
         $form = $this->createForm(CampusForm::class, $campus);
         $form->handleRequest($request);
 
@@ -321,9 +380,16 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/campus/{id}/delete', name: 'admin_campus_soft_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function softDeleteCampus(Campus $campus, HangoutRepository $hangoutRepository, EntityManagerInterface $em, Request $request): Response
+    public function softDeleteCampus(Campus                 $campus,
+                                     HangoutRepository      $hangoutRepository,
+                                     EntityManagerInterface $em,
+                                     Request                $request, MobileService $mobileService
+    ): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$campus->getId(), $request->request->get('_token'))) {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+        if ($this->isCsrfTokenValid('delete' . $campus->getId(), $request->request->get('_token'))) {
             $campus->setIsActive(false);
             $em->flush();
             $this->addFlash('success', 'Le campus a été supprimé.');
@@ -344,11 +410,7 @@ final class AdminController extends AbstractController
                     $annuleeStatus = $em->getRepository(Status::class)->findOneBy(['label' => 'Annulée']);
                     $h->setStatus($annuleeStatus);
                 }
-
-
-
             };
-
         }
 
         $em->flush();
@@ -358,6 +420,28 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_campus');
     }
 
+
+
+    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function deleteUser(Request $request, User $user, EntityManagerInterface $em,MobileService $mobileService
+    ): Response
+    {
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
+        $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
+
+        if (!$this->isCsrfTokenValid($token->getId(), $token->getValue())) {
+            throw $this->createAccessDeniedException('CSRF token invalide');
+        }
+
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', 'Utilisateur supprimé avec succès.');
+        return $this->redirectToRoute('admin_list_users');
+    }
 
 
 }
