@@ -29,8 +29,8 @@ final class SpotController extends AbstractController
         $form = $this->createForm(SpotForm::class, $spot);
         $form->handleRequest($request);
 
-        dump($form->get('cityName')->getData());
-        dump($form->get('zipCode')->getData());
+//        dump($form->get('cityName')->getData());
+//        dump($form->get('zipCode')->getData());
         if ($form->isSubmitted() && $form->isValid()) {
             // Récupération des champs non mappés
             $zipCode = $form->get('zipCode')->getData();

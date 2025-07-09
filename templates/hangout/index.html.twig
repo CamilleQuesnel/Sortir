@@ -103,11 +103,6 @@
                                 </a>
                                 {% endif %}
                             </td>
-
-
-
-
-
                             <td id="col-date">{{ item.hangout.startingDate|date('d/m/Y H:i') }}</td>
                             {% if isMobile %}
                                 <td id="col-lieu">{{ item.city }}</td>
@@ -133,14 +128,14 @@
                                         <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                     {% endif %}
-                                    {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user %}
+                                    {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user  %}
                                         <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                         <a href="{{ path('hangout_publish', {'id': item.hangout.id}) }}"
                                            class="action-link publish">Publier</a>
                                         <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                            class="action-link cancel">Annuler</a>
-                                    {% elseif item.hangout.status.label == 'Ouverte' %}
+                                    {% elseif item.hangout.status.label == 'Ouverte'  %}
                                         {% if item.hangout.organizer == app.user %}
                                             <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
                                                class="action-link edit">Modifier</a>
@@ -168,6 +163,10 @@
                                             <a href="{{ path('hangout_unsubscribe', {'id': item.hangout.id}) }}"
                                                class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
+                                    {% endif %}
+                                    {% if is_granted('ROLE_ADMIN') and item.hangout.status.label not in ['Archivée', 'Annulée'] and item.hangout.organizer != app.user %}
+                                        <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
+                                           class="action-link cancel">Annuler (admin)</a>
                                     {% endif %}
                                 </td>
                                 </tr>
