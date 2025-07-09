@@ -393,8 +393,33 @@ button {
 
 
 .custom-table {
-    width: 100%;
+    width: 60%;
     border-collapse: collapse;
+    margin: 0 auto;
+
+}
+
+.centered-form,
+.centered-button {
+    text-align: center;
+    margin: 20px 0;
+
+}
+
+.centered-form .form-group,
+.centered-form .form-row,
+.centered-form button {
+    margin-top: 20px;
+}
+.centered-form > div {
+    margin-bottom: 20px;
+}
+
+
+.action-cell {
+    display: flex;
+    gap: 10px; /* espace entre les éléments */
+    align-items: center;
 }
 
 .custom-table thead th {

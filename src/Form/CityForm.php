@@ -16,11 +16,16 @@ class CityForm extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Nom de la ville',
-
+                'label' => false,
+                'attr' => [
+                    'placeholder' => 'Nom de la ville',
+                ],
             ])
             ->add('zipCode', TextType::class, [
-                'label' => 'Code postal',
+                'label' => false,
+                'attr' => [
+                    'placeholder' => 'Code postal',
+                ],
             ]);
     }
 
