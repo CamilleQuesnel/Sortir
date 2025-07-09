@@ -32,7 +32,6 @@ final class HangoutController extends AbstractController
         StatusRepository       $statusRepository,
         EntityManagerInterface $entityManager,
         UserRepository         $userRepository,
-        EntityManagerInterface $entityManager
 
     ): Response
     {
