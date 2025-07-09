@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DataFixtures\StatusFixtures;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Entity\User;
@@ -27,15 +28,13 @@ final class HangoutController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
         Request                $request,
-        MobileService $mobileService,
+        MobileService          $mobileService,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
         EntityManagerInterface $entityManager,
         UserRepository         $userRepository,
-
     ): Response
     {
-
         $user = $this->getUser();
 
         $userAgent = $request->headers->get('User-Agent');
