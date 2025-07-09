@@ -28,6 +28,9 @@ class HangoutWithSpotUpdateForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => null, // ← on passe un tableau, pas une seule entité
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'hangout_update',
         ]);
     }
 }

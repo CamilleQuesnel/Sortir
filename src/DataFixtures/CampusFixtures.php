@@ -11,12 +11,12 @@ class CampusFixtures extends Fixture
     const CAMPUS_REFERENCE_PREFIX = 'campus_';
     public const CAMPUSNAMES = [
         [
-            'nom' => 'Nantes',
-            'codesPostaux' => '44000'
+            'nom' => 'Saint-Herblain',
+            'codesPostaux' => '44162'
         ],
         [
-            'nom' => 'Rennes',
-            'codesPostaux' => '35000'
+            'nom' => 'Chartres-de-Bretagne',
+            'codesPostaux' => '35131'
         ],
         [
             'nom' => 'Quimper',

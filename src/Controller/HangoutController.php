@@ -416,12 +416,12 @@ final class HangoutController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            // Vérifier si le spot sélectionné est dans une ville désactivée
-            $selectedSpot = $form->get('hangout')->get('spot')->getData();
-            if (!$selectedSpot->getCity()->isActive()) {
-                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
-                return $this->redirectToRoute('hangout_update', ['id' => $id]);
-            }
+//            // Vérifier si le spot sélectionné est dans une ville désactivée
+//            $selectedSpot = $form->get('hangout')->get('spot')->getData();
+//            if (!$selectedSpot->getCity()->isActive()) {
+//                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
+//                return $this->redirectToRoute('hangout_update', ['id' => $id]);
+//            }
 
             //test si button publier a ete cliquer
             if ($form->get('publish')->isClicked()) {
