@@ -21,7 +21,10 @@ class HangoutWithSpotUpdateForm extends AbstractType
             ->add('publish', SubmitType::class, [
                 'label' => 'Publier la sortie',
                 'attr' => ['class' => 'btn btn-primary']
-            ]);
+            ])
+
+        ;
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -30,7 +33,8 @@ class HangoutWithSpotUpdateForm extends AbstractType
             'data_class' => null, // ← on passe un tableau, pas une seule entité
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'hangout_update',
+
+            'csrf_token_id' => 'ton_identifiant_unique'
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DataFixtures\StatusFixtures;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Entity\User;
@@ -27,15 +28,15 @@ final class HangoutController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
         Request                $request,
-        MobileService $mobileService,
+        MobileService          $mobileService,
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
+        EntityManagerInterface $entityManager,
         UserRepository         $userRepository,
-        EntityManagerInterface $entityManager
     ): Response
     {
-
         $user = $this->getUser();
+
         $userAgent = $request->headers->get('User-Agent');
         $isMobile = stripos($userAgent, 'Mobile');
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
@@ -45,6 +46,7 @@ final class HangoutController extends AbstractController
 
         foreach ($hangouts as $sortie) {
             $label = $sortie->getStatus()->getLabel();
+            if ($label !== 'Annulée'){
 
             if ($label !== 'Passée' && $sortie->getStartingDate() < $today) {
                 $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
@@ -57,6 +59,7 @@ final class HangoutController extends AbstractController
             if ($label !== 'Passée' && $sortie->getRegistrationDeadline() < $today) {
                 $statusPassee = $statusRepository->findOneBy(['label' => 'Fermée']);
                 $sortie->setStatus($statusPassee);
+            }
             }
             $entityManager->persist($sortie);
 
@@ -346,7 +349,7 @@ final class HangoutController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        if ($hangout->getOrganizer() !== $user) {
+        if ($hangout->getOrganizer() !== $user && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('danger', 'Vous n\'êtes pas autorisé à annuler cette sortie.');
             return $this->redirectToRoute('hangout_details', ['id' => $id]);
         }
@@ -361,6 +364,8 @@ final class HangoutController extends AbstractController
 
         // Changer le statut
         $hangout->setStatus($statusAnnulee);
+        $entityManager->persist($hangout);
+
         $entityManager->flush();
 
         $this->addFlash('success', 'Sortie annulée avec succès.');
