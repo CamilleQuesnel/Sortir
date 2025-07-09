@@ -1,18 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="flash-container">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="flash flash-{{ label }}">
-
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-        <script>console.log("Bloc flash bien rendu !");</script>
-
-    </div>
 
     <h1 id="profile-h1">Mon profil - {{ app.user.pseudo | capitalize }}</h1>
 
@@ -44,6 +32,10 @@
     <div class="form-buttons">
         <a href="{{ path('app_profile_update') }}">
             <button type="button" class="btn-action">Modifier mes informations</button>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('admin') }}" class="btn-action">Aller sur le panneau d'administration</a>
+            {% endif %}
+
         </a>
     </div>
 {% endblock %}

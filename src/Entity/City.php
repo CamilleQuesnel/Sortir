@@ -6,6 +6,7 @@ use App\Repository\CityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CityRepository::class)]
 class City
@@ -16,10 +17,31 @@ class City
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotNull(message: 'Merci de remplir le nom de la ville.')]
+    #[Assert\Length(max: 100, maxMessage: 'La longueur ne peut pas exéder {{ limit }} caractères.')]
+    #[Assert\Length(min:1, minMessage: 'La ville doit comporter au moins {{ limit }} caractères.')]
     private ?string $name = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotNull(message: 'Merci de remplir le code postal.')]
+    #[Assert\Length(max: 10, maxMessage: 'La longueur ne peut pas exéder {{ limit }} caractères .')]
+    #[Assert\Length(min:1, minMessage: 'Le code postal doit faire au moins {{ limit }} caractères.')]
     private ?string $zipCode = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
 
     /**
      * @var Collection<int, Spot>

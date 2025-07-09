@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Gestion des comptes utilisateurs</h1>
+    <section>
+        <table class="custom-table">
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.pseudo }}</td>
+
+                    <td>
+                        {% if user.active %}
+                            <a href="{{ path('admin_user_deactivate', {'id': user.id}) }}"
+                               onclick="return confirm('Désactiver cet utilisateur ?');"
+                               class="btn-action">Désactiver</a>
+                        {% else %}
+                            <span style="color: gray">Déjà désactivé</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form method="post"
+                              action="{{ path('admin_user_delete', {'id': user.id}) }}"
+                              onsubmit="return confirm('Confirmer la suppression de {{ user.pseudo }} ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+                            <button class="btn-action" type="submit">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </section>
+{% endblock %}

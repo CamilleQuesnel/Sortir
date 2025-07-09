@@ -29,6 +29,8 @@ final class SpotController extends AbstractController
         $form = $this->createForm(SpotForm::class, $spot);
         $form->handleRequest($request);
 
+        dump($form->get('cityName')->getData());
+        dump($form->get('zipCode')->getData());
         if ($form->isSubmitted() && $form->isValid()) {
             // Récupération des champs non mappés
             $zipCode = $form->get('zipCode')->getData();
@@ -40,8 +42,14 @@ final class SpotController extends AbstractController
                 'name' => $cityName
             ]);
 
+            if ($existingCity && !$existingCity->isActive()) {
+                $this->addFlash('error', 'Impossible de créer un lieu dans une ville désactivée. Contactez l\'administrateur.');
+                return $this->redirectToRoute('spot_create');
+            }
+
             if ($existingCity) {
                 $spot->setCity($existingCity);
+
             } else {
                 $newCity = new City();
                 $newCity->setZipCode($zipCode);
@@ -58,7 +66,7 @@ final class SpotController extends AbstractController
         }
 
         return $this->render('spot/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

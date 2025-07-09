@@ -31,6 +31,9 @@ final class HangoutController extends AbstractController
         HangoutRepository      $hangoutRepository,
         StatusRepository       $statusRepository,
         EntityManagerInterface $entityManager,
+        UserRepository         $userRepository,
+        EntityManagerInterface $entityManager
+
     ): Response
     {
 
@@ -90,7 +93,7 @@ final class HangoutController extends AbstractController
         return $this->render('hangout/index.html.twig', [
             'hangoutWithCity' => $hangoutWithCity,
             'user' => $user,
-            'form' => $form->createView(),
+            'form' => $form
         ]);
     }
 
@@ -119,6 +122,13 @@ final class HangoutController extends AbstractController
 
         $createHangoutForm->handleRequest($request);
         if ($createHangoutForm->isSubmitted() && $createHangoutForm->isValid()) {
+
+            //vérifie que la ville du spot sélectionné est bien activée
+            if (!$hangout->getSpot()->getCity()->isActive()) {
+                $this->addFlash('danger', 'Impossible de créer une sortie dans une ville désactivée.');
+                return $this->redirectToRoute('hangout_publish');
+            }
+
             $hangout->setOrganizer($this->getUser());
 
             $hangout->setCampus($this->getUser()->getCampus());
@@ -141,18 +151,17 @@ final class HangoutController extends AbstractController
 
         return $this->render('hangout/publish.html.twig',
             [
-                'createHangoutForm' => $createHangoutForm->createView(),
+                'createHangoutForm' => $createHangoutForm,
                 'spots' => $spots,
             ]);
     }
 
-    #[Route('/{id}', name: 'details', methods: ['GET', 'Post'])]
+    #[Route('/{id}', name: 'details', methods: ['GET', 'POST'])]
     public function details(
         int               $id,
         HangoutRepository $hangoutRepository,
     ): Response
     {
-
         $hangout = $hangoutRepository->find($id);
 
 
@@ -250,7 +259,7 @@ final class HangoutController extends AbstractController
     }
 
 
-    #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'Post'])]
+    #[Route('/{id}/subscribe', name: 'subscribe', methods: ['GET', 'POST'])]
     public function subscribe(
         int                    $id,
         Request                $request,
@@ -410,6 +419,14 @@ final class HangoutController extends AbstractController
         // 4. Valider et sauvegarder
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+
+            // Vérifier si le spot sélectionné est dans une ville désactivée
+            $selectedSpot = $form->get('hangout')->get('spot')->getData();
+            if (!$selectedSpot->getCity()->isActive()) {
+                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
+                return $this->redirectToRoute('hangout_update', ['id' => $id]);
+            }
+
             //test si button publier a ete cliquer
             if ($form->get('publish')->isClicked()) {
                 $hangout->setStatus($statusRepository->findOneBy(['label' => 'Ouverte']));
@@ -444,7 +461,7 @@ final class HangoutController extends AbstractController
 
         return $this->render('hangout/update.html.twig', [
             'id' => $id,
-            'form' => $form->createView(),
+            'form' => $form,
             'spotForm' => $spot,
             'spotALL' => $spots
         ]);

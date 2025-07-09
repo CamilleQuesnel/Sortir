@@ -14,8 +14,8 @@
         <div class="custom-menu" id="login_link">
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') %}
-                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">VILLE</a></p>
-                    <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">CAMPUS</a></p>
+                    <p class="custom-nav-item"><a href="{{ path('admin_cities') }}">VILLE</a></p>
+                    <p class="custom-nav-item"><a href="{{ path('admin_campus') }}">CAMPUS</a></p>
                 {% endif %}
                 <p class="custom-nav-item"><a href="{{ path('hangout_index') }}">ACCUEIL</a></p>
                 <p class="custom-nav-item"><a href="{{ path('app_profile') }}">MON PROFIL</a></p>

@@ -6,6 +6,7 @@ use App\Repository\StatusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StatusRepository::class)]
 class Status
@@ -16,6 +17,7 @@ class Status
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "Le libellé du statut est obligatoire.")]
     private ?string $label = null;
 
     /**

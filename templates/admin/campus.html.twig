@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section>
+        <table>
+            {% for campus in campus %}
+                <tr>
+                    <td>{{ campus.name }}</td>
+                    <td>Modifier - Supprimer</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </section>
+
+
+{% endblock %}
+
