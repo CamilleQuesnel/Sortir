@@ -7,10 +7,10 @@
 
             <div class="profile-wrapper">
                 <div class="profile-avatar">
-                    <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
-
+                    <img
+                        src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}"
+                        alt="Avatar">
                 </div>
-
                 <div class="profile-info">
                     <p><strong>Prénom :</strong> {{ user.firstName | capitalize }}</p>
                     <p><strong>Nom :</strong> {{ user.lastName | capitalize }}</p>

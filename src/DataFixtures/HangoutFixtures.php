@@ -23,7 +23,6 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             /** @var Spot $spot */
             $spot = $this->getReference(SpotFixtures::SPOT_REFERENCE_PREFIX . $j, Spot::class);
 
-
             $allSpots[] = $spot;
         }
 
@@ -72,7 +71,6 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             if (!$spot) {
                 $spot = $allSpots[array_rand($allSpots)];
             }
-
             $hangout->setSpot($spot);
 
             // Participants (entre 1 et 5)

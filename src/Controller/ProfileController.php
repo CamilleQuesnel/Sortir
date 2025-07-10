@@ -20,15 +20,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class ProfileController extends AbstractController
 {
-
     #[Route('profile/{id}', name: 'app_profile_id', requirements: ['id' => '\d+'], methods: ['GET'])]
 //rajout du requirement pour éviter le conflit de route
     public function profileId(
-        int $id,
+        int            $id,
         UserRepository $userRepository,
-        Request $request,
-        MobileService $mobileService,
-    ) : Response
+        Request        $request,
+        MobileService  $mobileService,
+    ): Response
     {
         if ($mobileService->isMobile($request)) {
             return $this->redirectToRoute('hangout_index');
@@ -39,7 +38,7 @@ final class ProfileController extends AbstractController
 
     #[Route('/profile', name: 'app_profile', methods: ['GET'])]
     public function profile(
-        Request $request,
+        Request       $request,
         MobileService $mobileService,
     ): Response
     {
@@ -55,16 +54,15 @@ final class ProfileController extends AbstractController
         ]);
     }
 
-
     #[Route('/profile/update-image', name: 'app_profile_update_image', methods: ['POST'])]
     public function updateImage(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        SluggerInterface $slugger,
+        Request                                                         $request,
+        EntityManagerInterface                                          $entityManager,
+        SluggerInterface                                                $slugger,
         #[Autowire('%kernel.project_dir%/public/upload/images')] string $ImagesDirectory
-    ): Response {
+    ): Response
+    {
         $user = $this->getUser();
-
 
         $form = $this->createForm(ProfileImageFormType::class);
         $form->handleRequest($request);
@@ -90,18 +88,18 @@ final class ProfileController extends AbstractController
                 }
             }
         }
-
         return $this->redirectToRoute('app_profile');
     }
 
     #[Route('/profile/update', name: 'app_profile_update', methods: ['POST', 'GET'])]
     public function profileUpdate(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        SluggerInterface $slugger,
+        Request                                                         $request,
+        EntityManagerInterface                                          $entityManager,
+        SluggerInterface                                                $slugger,
         #[Autowire('%kernel.project_dir%/public/upload/images')] string $ImagesDirectory,
-        UserPasswordHasherInterface $passwordHasher
-    ): Response {
+        UserPasswordHasherInterface                                     $passwordHasher
+    ): Response
+    {
         $user = $this->getUser();
         if (!$user) {
             throw $this->createAccessDeniedException('Utilisateur non connecté !');
@@ -155,7 +153,6 @@ final class ProfileController extends AbstractController
                         $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
                         $user->setPassword($hashedPassword);
                     }
-
                     $entityManager->persist($user);
                     $entityManager->flush();
                     $this->addFlash('success', 'Profil mis à jour !');
@@ -168,14 +165,10 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_update');
         }
 
-
         return $this->render('profile/update.html.twig', [
             'updateProfileForm' => $updateProfileForm,
             'profileImageForm' => $profileImageForm,
             'user' => $user,
         ]);
-
     }
-
-
 }

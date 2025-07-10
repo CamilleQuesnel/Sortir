@@ -6,7 +6,8 @@
 
     <div class="profile-wrapper">
         <div class="profile-avatar">
-            <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}" alt="Avatar">
+            <img src="{{ asset(app.user.image ? 'upload/images/' ~ app.user.image : 'upload/default-avatar.png') }}"
+                 alt="Avatar">
 
             {{ form_start(profileImageForm, {
                 attr: { class: 'profile-form' },
@@ -24,22 +25,22 @@
 
             <div class="profile-info-row">
                 <label for="pseudo">Pseudo :</label>
-                {{ form_widget(updateProfileForm.pseudo)}}
+                {{ form_widget(updateProfileForm.pseudo) }}
             </div>
 
             <div class="profile-info-row">
                 <label for="firstName">Prénom :</label>
-                {{ form_widget(updateProfileForm.firstName)}}
+                {{ form_widget(updateProfileForm.firstName) }}
             </div>
 
             <div class="profile-info-row">
                 <label for="lastName">Nom :</label>
-                {{ form_widget(updateProfileForm.lastName)}}
+                {{ form_widget(updateProfileForm.lastName) }}
             </div>
 
             <div class="profile-info-row">
                 <label for="phoneNumber">Numéro de téléphone :</label>
-                {{ form_widget(updateProfileForm.phoneNumber)}}
+                {{ form_widget(updateProfileForm.phoneNumber) }}
             </div>
 
             <div class="profile-info-row">

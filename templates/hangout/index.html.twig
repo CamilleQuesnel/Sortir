@@ -1,16 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="flash-container">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="flash flash-{{ label }}">
-
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </div>
     <main id="hangout_main">
         {% if not isMobile %}
         <div id="hangout_date">
@@ -18,75 +8,73 @@
             <p>Participant : {{ app.user.firstName|capitalize }} {{ app.user.lastName|first|capitalize }}.</p>
         </div>
         <div class="filters_and_results">
-
-                <section id="section_filter">
-                    {{ form_start(form) }}
-                    <div class="filters">
-                        <div id="form_filters">
-                            <h3>Filtrer les sorties</h3>
-                            <div>
-                                {{ form_label(form.campus) }}
-                                {{ form_widget(form.campus) }}
-                            </div>
-                            <div>
-                                {{ form_label(form.outputNameContains) }}
-                                {{ form_widget(form.outputNameContains) }}
-                            </div>
-                            <div>
-                                {{ form_label(form.dateFrom) }}
-                                {{ form_widget(form.dateFrom) }}
-                                {{ form_label(form.dateTo) }}
-                                {{ form_widget(form.dateTo) }}
-                            </div>
+            <section id="section_filter">
+                {{ form_start(form) }}
+                <div class="filters">
+                    <div id="form_filters">
+                        <h3>Filtrer les sorties</h3>
+                        <div>
+                            {{ form_label(form.campus) }}
+                            {{ form_widget(form.campus) }}
                         </div>
-                        <div id="form_select">
-                            <div>
-                                {{ form_widget(form.isOrganizer) }}
-                                {{ form_label(form.isOrganizer) }}
-                            </div>
-                            <div>
-                                {{ form_widget(form.isRegistered) }}
-                                {{ form_label(form.isRegistered) }}
-                            </div>
-                            <div>
-                                {{ form_widget(form.isNotRegistered) }}
-                                {{ form_label(form.isNotRegistered) }}
-                            </div>
-                            <div>
-                                {{ form_widget(form.isPast) }}
-                                {{ form_label(form.isPast) }}
-                            </div>
+                        <div>
+                            {{ form_label(form.outputNameContains) }}
+                            {{ form_widget(form.outputNameContains) }}
                         </div>
-
-                        <div id="btn-search">
-                            {{ form_row(form.search) }}
+                        <div>
+                            {{ form_label(form.dateFrom) }}
+                            {{ form_widget(form.dateFrom) }}
+                            {{ form_label(form.dateTo) }}
+                            {{ form_widget(form.dateTo) }}
                         </div>
                     </div>
-                    {{ form_end(form) }}
+                    <div id="form_select">
+                        <div>
+                            {{ form_widget(form.isOrganizer) }}
+                            {{ form_label(form.isOrganizer) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isRegistered) }}
+                            {{ form_label(form.isRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isNotRegistered) }}
+                            {{ form_label(form.isNotRegistered) }}
+                        </div>
+                        <div>
+                            {{ form_widget(form.isPast) }}
+                            {{ form_label(form.isPast) }}
+                        </div>
+                    </div>
 
-                </section>
+                    <div id="btn-search">
+                        {{ form_row(form.search) }}
+                    </div>
+                </div>
+                {{ form_end(form) }}
+
+            </section>
             {% endif %}
 
             {% if isMobile %}
                 <h1>Mes sorties :</h1>
             {% endif %}
             <div class="results">
-
                 <section class="custom-results ">
                     <table class="custom-table ">
                         <thead>
                         <tr>
-                            <th class="col-name" >Nom de la sortie</th>
-                            <th class="col-date" >Date de la sortie</th>
+                            <th class="col-name">Nom de la sortie</th>
+                            <th class="col-date">Date de la sortie</th>
                             {% if isMobile %}
-                                <th class="col-lieu" >Lieu</th>
+                                <th class="col-lieu">Lieu</th>
                             {% else %}
                                 <th class="col-deadline">Clôture</th>
                                 <th class="col-inscriptions">Inscrits / places</th>
                                 <th class="col-status">État</th>
                                 <th class="col-is-registered">Inscrit</th>
-                                <th class="col-organizer" >Organisateur</th>
-                                <th class="col-campus" >Campus</th>
+                                <th class="col-organizer">Organisateur</th>
+                                <th class="col-campus">Campus</th>
                                 <th class="actionsTh">Actions</th>
                             {% endif %}
                         </tr>
@@ -125,19 +113,22 @@
                                            class="action-link view">Afficher</a>
                                     {% endif %}
                                     {% if item.hangout.status.label == 'Annulée' and item.hangout.organizer == app.user %}
-                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                           data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                     {% endif %}
-                                    {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user  %}
-                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
+                                    {% if item.hangout.status.label == 'Créée' and item.hangout.organizer == app.user %}
+                                        <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                           data-turbo="false"
                                            class="action-link edit">Modifier</a>
                                         <a href="{{ path('hangout_publish', {'id': item.hangout.id}) }}"
                                            class="action-link publish">Publier</a>
                                         <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                            class="action-link cancel">Annuler</a>
-                                    {% elseif item.hangout.status.label == 'Ouverte'  %}
+                                    {% elseif item.hangout.status.label == 'Ouverte' %}
                                         {% if item.hangout.organizer == app.user %}
-                                            <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"  data-turbo="false"
+                                            <a href="{{ path('hangout_update', {'id': item.hangout.id}) }}"
+                                               data-turbo="false"
                                                class="action-link edit">Modifier</a>
                                             <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
                                                class="action-link cancel">Annuler</a>
@@ -182,7 +173,7 @@
             </div>
 
             {% if not isMobile %}
-                <a href="{{ path('hangout_publish') }}"  data-turbo="false">
+                <a href="{{ path('hangout_publish') }}" data-turbo="false">
                     <button class="btn btn-primary" id="btn-create_hangout">Créer une sortie</button>
                 </a>
             {% endif %}

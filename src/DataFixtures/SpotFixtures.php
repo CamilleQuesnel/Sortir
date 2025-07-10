@@ -52,8 +52,6 @@ class SpotFixtures extends Fixture implements DependentFixtureInterface
             /** @var City $city */
             $city = $this->getReference(CityFixtures::CITY_REFERENCE_PREFIX . $normalizedName, City::class);
 
-
-
             foreach ($cityPlaces as $placeData) {
                 $spot = new Spot();
                 $spot->setCity($city);

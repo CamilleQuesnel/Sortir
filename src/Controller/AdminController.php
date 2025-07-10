@@ -27,7 +27,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Csrf\CsrfToken;
 
-
 final class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin')]
@@ -42,7 +41,6 @@ final class AdminController extends AbstractController
         }
         return $this->render('admin/index.html.twig', []);
     }
-
 
     //    ###################### GESTION USERS ######################
     #[Route('/admin/list-users', name: 'admin_list_users')]
@@ -120,7 +118,6 @@ final class AdminController extends AbstractController
         return $this->redirectToRoute('admin_list_users');
     }
 
-
     /**
      * @throws OptimisticLockException
      * @throws ORMException
@@ -153,10 +150,11 @@ final class AdminController extends AbstractController
     #[Route('/admin/cities', name: 'admin_cities', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function cites(
-        Request $request,
+        Request        $request,
         CityRepository $cityRepository,
-        MobileService $mobileService
-    ): Response {
+        MobileService  $mobileService
+    ): Response
+    {
         // Redirection mobile AVANT traitement
         if ($mobileService->isMobile($request)) {
             return $this->redirectToRoute('hangout_index');
@@ -180,7 +178,6 @@ final class AdminController extends AbstractController
             'cities' => $cities,
         ]);
     }
-
 
     #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
@@ -272,7 +269,6 @@ final class AdminController extends AbstractController
         ]);
     }
 
-
     //    ###################### CAMPUS ######################
 
     #[Route('/admin/campus', name: 'admin_campus', methods: ['GET', 'POST'])]
@@ -280,7 +276,6 @@ final class AdminController extends AbstractController
     public function campus(Request $request, EntityManagerInterface $entityManager, MobileService $mobileService
     ): Response
     {
-
 
         if ($mobileService->isMobile($request)) {
             return $this->redirectToRoute('hangout_index');
@@ -310,10 +305,11 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/campus/add', name: 'admin_campus_add')]
     #[IsGranted('ROLE_ADMIN')]
-    public function addCampus(Request                $request,
-                              EntityManagerInterface $em,
-                              CampusRepository       $campusRepository,
-                              MobileService          $mobileService
+    public function addCampus(
+        Request                $request,
+        EntityManagerInterface $em,
+        CampusRepository       $campusRepository,
+        MobileService          $mobileService
     ): Response
     {
         if ($mobileService->isMobile($request)) {
@@ -375,10 +371,11 @@ final class AdminController extends AbstractController
 
     #[Route('/admin/campus/{id}/delete', name: 'admin_campus_soft_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function softDeleteCampus(Campus                 $campus,
-                                     HangoutRepository      $hangoutRepository,
-                                     EntityManagerInterface $em,
-                                     Request                $request, MobileService $mobileService
+    public function softDeleteCampus(
+        Campus                 $campus,
+        HangoutRepository      $hangoutRepository,
+        EntityManagerInterface $em,
+        Request                $request, MobileService $mobileService
     ): Response
     {
         if ($mobileService->isMobile($request)) {

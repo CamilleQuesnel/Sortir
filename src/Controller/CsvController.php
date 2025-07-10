@@ -30,8 +30,8 @@ class CsvController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/upload-csv', name: 'admin_upload_csv')]
     public function upload(
-        Request $request,
-        CsvImporter $csvImporter,
+        Request       $request,
+        CsvImporter   $csvImporter,
         MobileService $mobileService,
     ): Response
     {
@@ -58,7 +58,7 @@ class CsvController extends AbstractController
                     ])
                 ],
             ])
-            ->add('submit', SubmitType::class, ['label' => 'Télécharger sur le serveur', 'attr' => ['class' => 'btn-action'],] )
+            ->add('submit', SubmitType::class, ['label' => 'Télécharger sur le serveur', 'attr' => ['class' => 'btn-action'],])
             ->getForm();
 
         $form->handleRequest($request);
@@ -74,7 +74,7 @@ class CsvController extends AbstractController
                 try {
                     $csvFile->move($uploadsDirectory, $newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', "erreur durant l'upload". $e->getMessage());
+                    $this->addFlash('error', "erreur durant l'upload" . $e->getMessage());
                     return $this->redirectToRoute('admin_upload_csv');
                 }
 
@@ -87,7 +87,6 @@ class CsvController extends AbstractController
                 return $this->redirectToRoute('admin_upload_csv');
             }
         }
-
         return $this->render('csv/csvUpload.html.twig', [
             'form' => $form,
         ]);

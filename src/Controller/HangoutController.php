@@ -45,30 +45,7 @@ final class HangoutController extends AbstractController
         //Verification date des sorties
          $statusService->statusSort($hangouts);
 
-//        $today = new DateTimeImmutable('today');
-//        $nextMonth = $today->modify('+1 month');
-//
-//        foreach ($hangouts as $sortie) {
-//            $label = $sortie->getStatus()->getLabel();
-//            if ($label !== 'Annulée') {
-//
-//                if ($label !== 'Passée' && $sortie->getStartingDate() < $today) {
-//                    $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
-//                    $sortie->setStatus($statusPassee);
-//                }
-//                if ($label === 'Passée' && $sortie->getStartingDate() < $nextMonth) {
-//                    $statusArchivee = $statusRepository->findOneBy(['label' => 'Archivée']);
-//                    $sortie->setStatus($statusArchivee);
-//                }
-//                if ($label !== 'Passée' && $sortie->getRegistrationDeadline() < $today) {
-//                    $statusPassee = $statusRepository->findOneBy(['label' => 'Fermée']);
-//                    $sortie->setStatus($statusPassee);
-//                }
-//            }
-//            $entityManager->persist($sortie);
-//
-//        }
-//        $entityManager->flush();
+
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 

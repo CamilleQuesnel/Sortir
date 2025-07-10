@@ -1,8 +1,5 @@
 /* Titre */
-#update-hangout h1 {
-    text-align: center;
-    margin-bottom: 30px;
-}
+
 
 .hangout-grid {
     max-width: 1000px; /* agrandit la grille globale */

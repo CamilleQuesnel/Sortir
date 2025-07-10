@@ -22,15 +22,12 @@ class MobileDetectorSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $userAgent = $request->headers->get('User-Agent');
 
-
-
         if ($userAgent) {
             $isMobile = stripos($userAgent, 'Mobile') !== false
                 || stripos($userAgent, 'Android') !== false
                 || stripos($userAgent, 'iPhone') !== false
                 || stripos($userAgent, 'iPad') !== false;
         }
-
         // Partage avec tous les templates Twig
         $this->twig->addGlobal('isMobile', $isMobile); //TODO Mettre true pour simuler un mobile
     }
@@ -39,7 +36,6 @@ class MobileDetectorSubscriber implements EventSubscriberInterface
     {
         return [
             'kernel.request' => 'onKernelRequest',
-
         ];
     }
 }
