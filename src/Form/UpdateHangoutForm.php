@@ -19,7 +19,6 @@ class UpdateHangoutForm extends AbstractType
                 'label' => false
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

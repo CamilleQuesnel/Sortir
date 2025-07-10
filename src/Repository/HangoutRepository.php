@@ -19,7 +19,6 @@ class HangoutRepository extends ServiceEntityRepository
     }
 
     public function findByFilters(?User $user, ?array $filters): array
-
     {
         $qb = $this->createQueryBuilder('h')
             ->leftJoin('h.campus', 'c')
@@ -68,6 +67,7 @@ class HangoutRepository extends ServiceEntityRepository
         }
         return $qb->getQuery()->getResult();
     }
+
     public function findHangoutsByUser(User $user): array
     {
         return $this->createQueryBuilder('h')
@@ -86,6 +86,4 @@ class HangoutRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-
 }

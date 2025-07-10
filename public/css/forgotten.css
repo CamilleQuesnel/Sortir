@@ -31,18 +31,22 @@ form {
     button {
         margin-top: 2px;
     }
+
     input {
         margin: 2px;
         max-height: 30px;
     }
-    label{
+
+    label {
         font-size: large;
-        margin-right: 10px ;
+        margin-right: 10px;
 
     }
+
     .forgotten_main {
         justify-content: start;
     }
+
     .forgotten_form {
         display: flex;
         flex-direction: row;
@@ -51,6 +55,4 @@ form {
 
         flex-wrap: wrap;
     }
-
-
 }

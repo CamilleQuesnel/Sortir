@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\City;
 use App\Entity\Spot;
-use App\Form\CityForm;
 use App\Form\SpotForm;
 use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;

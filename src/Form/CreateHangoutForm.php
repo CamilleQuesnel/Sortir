@@ -64,10 +64,7 @@ class CreateHangoutForm extends AbstractType
                 'label' => 'Créer une sortie',
                 'attr' => ['class' => 'btn-action']
             ])
-
-
             ;
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

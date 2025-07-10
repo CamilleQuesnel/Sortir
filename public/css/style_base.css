@@ -16,21 +16,29 @@ body {
     height: 100%;
 }
 
-header {
-
-}
-
 main {
     flex: 1;
+}
+
+input[type="text"],
+input[type="password"] {
+    border: 2px solid black;
+    padding: 0.4rem;
+    width: 250px;
+}
+
+button {
+    border: 2px solid black;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
 }
 
 h1 {
     text-align: center;
 }
 
-footer {
-
-}
 /* ===========FLASH MESSAGE=============*/
 .flash-container {
     margin: 1em auto;
@@ -87,39 +95,25 @@ ul {
     font-size: 0.9rem;
 }
 
-ul li::before{
+ul li::before {
     content: "⚠ ";
     margin-right: 0.3rem;
 }
+
 /* Fin Erreurs de formulaires */
 
 /* csv upload */
+.csv-text {
+    text-align: center;
+}
+
 #upload-csv-form div > button[type="submit"] {
     display: block;
     margin: 0 auto; /* centre horizontalement */
 }
 
-.csv-text {
-    text-align: center;
-}
 /*fin csv upload*/
 
-
-
-input[type="text"],
-input[type="password"] {
-    border: 2px solid black;
-    padding: 0.4rem;
-    width: 250px;
-}
-
-button {
-    border: 2px solid black;
-    background-color: white;
-    padding: 0.5rem 1rem;
-    margin-right: 1rem;
-    cursor: pointer;
-}
 
 .actions {
     display: flex;
@@ -169,7 +163,6 @@ button {
     border: 1px solid black;
     padding: 0.6rem;
     box-shadow: 4px 4px 1px black;
-
     gap: 50px;
 }
 
@@ -188,9 +181,6 @@ button {
     font-family: Arial, sans-serif;
     font-size: 14px;
 }
-
-
-
 
 .results thead {
     text-align: center;
@@ -217,11 +207,9 @@ button {
     text-decoration: none;
 }
 
-.results a:hover{
+.results a:hover {
     color: #4CEBF0;
 }
-
-
 
 .btn-primary {
     align-items: center;
@@ -233,19 +221,16 @@ button {
     cursor: pointer;
 }
 
-
 #hangout_form_campus,
 #hangout_form_dateFrom,
 #hangout_form_outputNameContains,
-#hangout_form_dateTo
-{
+#hangout_form_dateTo {
     height: 40px;
     padding: 0 0.8rem;
     font-size: 16px;
     border: 1px solid black;
     box-sizing: border-box;
 }
-
 
 #btn-spot-create {
     background-color: #fff;
@@ -342,7 +327,6 @@ button {
     width: 50px;
 }
 
-
 .custom-results {
     background: white;
     box-shadow: 4px 4px 1px black;
@@ -355,12 +339,15 @@ button {
 .col-name {
     width: 20%;
 }
+
 .col-date {
     width: 10%;
 }
-.col-lieu{
+
+.col-lieu {
     width: 10%;
 }
+
 .col-deadline {
     width: 10%;
 }
@@ -393,22 +380,16 @@ button {
     white-space: nowrap;
 }
 
-
 .custom-table {
     width: 60%;
     border-collapse: collapse;
-
-
-
     margin: 0 auto;
-
 }
 
 .centered-form,
 .centered-button {
     text-align: center;
     margin: 20px 0;
-
 }
 
 .centered-form .form-group,
@@ -416,16 +397,15 @@ button {
 .centered-form button {
     margin-top: 20px;
 }
+
 .centered-form > div {
     margin-bottom: 20px;
 }
-
 
 .action-cell {
     display: flex;
     gap: 10px; /* espace entre les éléments */
     align-items: center;
-
 }
 
 .custom-table thead th {
@@ -484,7 +464,8 @@ button {
     color: #fff;
     background-color: #c0392b;
 }
-.action-link.adminAnnuler{
+
+.action-link.adminAnnuler {
     color: #fff;
     background-color: blueviolet;
 }
@@ -498,7 +479,6 @@ button {
     color: #fff;
     background-color: #6c757d;
 }
-
 
 /* ====== PAGE PUBLISH HANGOUT ====== */
 #create-hangout h1 {
@@ -595,7 +575,6 @@ button {
     transform: translateY(-1px);
 }
 
-
 .action-buttons {
     display: flex;
     gap: 1rem;
@@ -638,11 +617,9 @@ button {
     transition: all 0.2s ease;
 }
 
-
 .btn-action:hover {
     background-color: #4CEBF0;
 }
-
 
 /* ====== NAVIGATION BAR ====== */
 #custom-nav {
@@ -805,12 +782,13 @@ button {
 #show-hangout {
     text-align: center;
 }
-.participants-name a{
+
+.participants-name a {
     color: #014983;
     font-weight: bold;
 }
 
-.participants-name a:hover{
+.participants-name a:hover {
     color: #4CEBF0;
     font-weight: bold;
     text-decoration: none;

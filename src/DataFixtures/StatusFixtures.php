@@ -29,7 +29,6 @@ class StatusFixtures extends Fixture
             $manager->persist($status);
             $this->addReference(self::STATUS_REFERENCE_PREFIX . $key, $status);
         }
-
         $manager->flush();
     }
 }

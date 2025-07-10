@@ -7,9 +7,7 @@
         <div class="content">
             <div class="hangout">
                 {{ form_start(createHangoutForm) }}
-
                 <div class="hangout-grid">
-
                     <div class="left-column">
                         {{ form_row(createHangoutForm.name) }}
                         {{ form_row(createHangoutForm.startingDate) }}
@@ -18,7 +16,6 @@
                         {{ form_row(createHangoutForm.nbInscriptionsMax) }}
                         {{ form_row(createHangoutForm.description) }}
                     </div>
-
                     <div class="right-column">
                         <div class="spot-select">
                             {{ form_row(createHangoutForm.spot) }} <br>
@@ -34,7 +31,6 @@
                                 <p>Ville : <span id="spot-city"></span></p>
                             </div>
                         </div>
-
                         <div class="action-buttons">
                             {{ form_widget(createHangoutForm.publish) }}
                             {{ form_widget(createHangoutForm.save) }}

@@ -19,13 +19,13 @@ class City
     #[ORM\Column(length: 100)]
     #[Assert\NotNull(message: 'Merci de remplir le nom de la ville.')]
     #[Assert\Length(max: 100, maxMessage: 'La longueur ne peut pas exéder {{ limit }} caractères.')]
-    #[Assert\Length(min:1, minMessage: 'La ville doit comporter au moins {{ limit }} caractères.')]
+    #[Assert\Length(min: 1, minMessage: 'La ville doit comporter au moins {{ limit }} caractères.')]
     private ?string $name = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\NotNull(message: 'Merci de remplir le code postal.')]
     #[Assert\Length(max: 10, maxMessage: 'La longueur ne peut pas exéder {{ limit }} caractères .')]
-    #[Assert\Length(min:1, minMessage: 'Le code postal doit faire au moins {{ limit }} caractères.')]
+    #[Assert\Length(min: 1, minMessage: 'Le code postal doit faire au moins {{ limit }} caractères.')]
     private ?string $zipCode = null;
 
     #[ORM\Column(type: 'boolean')]
@@ -41,7 +41,6 @@ class City
         $this->isActive = $isActive;
         return $this;
     }
-
 
     /**
      * @var Collection<int, Spot>

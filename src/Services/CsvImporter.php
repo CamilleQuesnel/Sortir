@@ -41,8 +41,6 @@ class CsvImporter
         $statement = new Statement();
         $records = $statement->process($csv);
 
-
-
         $data = [];
         foreach ($records as $record) {
             $user = new User();
@@ -60,9 +58,7 @@ class CsvImporter
             $this->entityManager->persist($user);
             $data[] = $record;
         }
-
         $this->entityManager->flush();
-
         return $data;
     }
 }

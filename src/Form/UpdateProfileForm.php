@@ -23,7 +23,6 @@ class UpdateProfileForm extends AbstractType
     {
         $builder
             ->add('pseudo')
-
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'Mot de passe : ',
                 'mapped' => false,
@@ -41,8 +40,6 @@ class UpdateProfileForm extends AbstractType
                     ]),
                 ],
             ])
-
-
 
             ->add('confirmPassword', PasswordType::class, [
                 'label' => 'Confirmation du mot de passe : ',
