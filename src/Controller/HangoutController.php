@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\DataFixtures\StatusFixtures;
 use App\Entity\Hangout;
 use App\Entity\Spot;
 use App\Entity\User;
@@ -11,12 +10,9 @@ use App\Form\HangoutForm;
 use App\Form\HangoutWithSpotUpdateForm;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
-use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
-use App\Repository\UserRepository;
 use App\Services\MobileService;
 use App\Services\StatusService;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,13 +24,10 @@ final class HangoutController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(
-        Request                $request,
-        MobileService          $mobileService,
-        HangoutRepository      $hangoutRepository,
-        StatusRepository       $statusRepository,
-        EntityManagerInterface $entityManager,
-        UserRepository         $userRepository,
-        StatusService          $statusService,
+        Request           $request,
+        MobileService     $mobileService,
+        HangoutRepository $hangoutRepository,
+        StatusService     $statusService,
     ): Response
     {
         $user = $this->getUser();
@@ -43,8 +36,7 @@ final class HangoutController extends AbstractController
         $isMobile = stripos($userAgent, 'Mobile');
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         //Verification date des sorties
-         $statusService->statusSort($hangouts);
-
+        $statusService->statusSort($hangouts);
 
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
@@ -53,15 +45,11 @@ final class HangoutController extends AbstractController
             $filters = $form->getData();
         }
         $hangoutWithCity = [];
-
-
         if ($mobileService->isMobile($request)) {
             $filters['isRegistered'] = true;
-            $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
-        } else {
-            $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         }
 
+        $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         foreach ($hangouts as $hangout) {
             $hangoutStatus = $hangout->getStatus()->getLabel();
             if ((!$this->isGranted("ROLE_ADMIN")) && $hangoutStatus === "Archivée") {
@@ -81,7 +69,6 @@ final class HangoutController extends AbstractController
             'form' => $form
         ]);
     }
-
 
     #[Route('/publish', name: 'publish', methods: ['GET', 'POST'])]
     public function publish(
@@ -119,10 +106,10 @@ final class HangoutController extends AbstractController
             $hangout->setCampus($this->getUser()->getCampus());
 
             if ($createHangoutForm->get('publish')->isClicked()) {
-                $status = $statusRepository->findOneBy(['label' => 'Ouverte']);//quand l'organisateur clique sur publier la sortie
+                $status = $statusRepository->findOneBy(['label' => 'Ouverte']);//quand l'organisateur clique sur publier la sortie.
                 $this->addFlash('success', "La sortie a bien été publiée.");
             } else {
-                $status = $statusRepository->findOneBy(['label' => 'Créée']);//quand l'organisateur clique sur enregistrer elle est juste créée
+                $status = $statusRepository->findOneBy(['label' => 'Créée']);//quand l'organisateur clique sur enregistrer, elle est juste créée.
                 $this->addFlash('success', "La sortie a bien été enregistrée. Pensez à la publier.");
             }
 
@@ -154,7 +141,7 @@ final class HangoutController extends AbstractController
             $this->addFlash('danger', 'Impossible de trouver la sortie.');
             return $this->redirectToRoute('hangout_index');
         }
-        if ($hangout->getStatus()->getLabel() === 'Archivee' or $hangout->getStatus()->getLabel() === 'Passée') {
+        if ($hangout->getStatus()->getLabel() === 'Archivée' or $hangout->getStatus()->getLabel() === 'Passée') {
             $this->addFlash('warning', 'Vous ne pouvez pas modifier cette sortie.');
             return $this->redirectToRoute('hangout_index');
         }
