@@ -13,6 +13,7 @@ use App\Form\CreateUserFormType;
 use App\Repository\CampusRepository;
 use App\Repository\CityRepository;
 use App\Repository\HangoutRepository;
+use App\Repository\StatusRepository;
 use App\Services\MobileService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
@@ -126,7 +127,7 @@ final class AdminController extends AbstractController
      */
     #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteUser(Request $request, User $user, EntityManagerInterface $em, HangoutRepository $hangoutRepository): Response
+    public function deleteUser(Request $request, User $user, StatusRepository $statusRepository, EntityManagerInterface $em, HangoutRepository $hangoutRepository): Response
     {
         $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
 
@@ -134,13 +135,11 @@ final class AdminController extends AbstractController
             throw $this->createAccessDeniedException('CSRF token invalide');
         }
 
-        //todo suppr le participant des sorties en query
-        $user = $em->find(User::class, $user->getId());
-
-//        foreach ($user->getHangouts() as $userToDelete) {
-//            $userToDelete->removeParticipant($user);
-//        }
-        //todo annuler la sortie de l'utisateur supprimé
+        //supprime le participant des sorties auxquelles il était inscrit
+        $hangouts = $hangoutRepository->findHangoutsByUser($user);
+        foreach ($hangouts as $hangout) {
+            $hangout->getUsers()->removeElement($user);
+        }
 
         $em->remove($user);
         $em->flush();
@@ -151,14 +150,17 @@ final class AdminController extends AbstractController
 
 //    ###################### CITIES ######################
 
-    #[Route('/admin/cites', name: 'admin_cities', methods: ['GET'])]
+    #[Route('/admin/cities', name: 'admin_cities', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function cites(
-        Request        $request,
+        Request $request,
         CityRepository $cityRepository,
-        MobileService  $mobileService
-    ): Response
-    {
+        MobileService $mobileService
+    ): Response {
+        // Redirection mobile AVANT traitement
+        if ($mobileService->isMobile($request)) {
+            return $this->redirectToRoute('hangout_index');
+        }
 
         $search = $request->query->get('search');
 
@@ -174,18 +176,11 @@ final class AdminController extends AbstractController
             $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
         }
 
-        return $this->render('admin/cites.html.twig', [
+        return $this->render('admin/cities.html.twig', [
             'cities' => $cities,
         ]);
-
-        if ($mobileService->isMobile($request)) {
-            return $this->redirectToRoute('hangout_index');
-        }
-        $cities = $cityRepository->findBy(['isActive' => true], ['name' => 'ASC']);
-
-        return $this->render('admin/cites.html.twig', ['cities' => $cities]);
-
     }
+
 
     #[Route('/admin/city/{id}/delete', name: 'admin_city_soft_delete', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
@@ -419,30 +414,6 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_campus');
     }
-
-
-
-    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function deleteUser(Request $request, User $user, EntityManagerInterface $em,MobileService $mobileService
-    ): Response
-    {
-        if ($mobileService->isMobile($request)) {
-            return $this->redirectToRoute('hangout_index');
-        }
-        $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
-
-        if (!$this->isCsrfTokenValid($token->getId(), $token->getValue())) {
-            throw $this->createAccessDeniedException('CSRF token invalide');
-        }
-
-        $em->remove($user);
-        $em->flush();
-
-        $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-        return $this->redirectToRoute('admin_list_users');
-    }
-
 
 }
 
