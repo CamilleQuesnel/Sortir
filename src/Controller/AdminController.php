@@ -414,6 +414,5 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_campus');
     }
-
 }
 

@@ -76,25 +76,25 @@
                     <table class="custom-table ">
                         <thead>
                         <tr>
-                            <th>Nom de la sortie</th>
-                            <th>Date de la sortie</th>
+                            <th class="col-name" >Nom de la sortie</th>
+                            <th class="col-date" >Date de la sortie</th>
                             {% if isMobile %}
-                                <th>Lieu</th>
+                                <th class="col-lieu" >Lieu</th>
                             {% else %}
-                                <th>Clôture</th>
-                                <th>Inscrits / places</th>
-                                <th>État</th>
-                                <th>Inscrit</th>
-                                <th>Organisateur</th>
-                                <th>Campus</th>
-                                <th>Actions</th>
+                                <th class="col-deadline">Clôture</th>
+                                <th class="col-inscriptions">Inscrits / places</th>
+                                <th class="col-status">État</th>
+                                <th class="col-is-registered">Inscrit</th>
+                                <th class="col-organizer" >Organisateur</th>
+                                <th class="col-campus" >Campus</th>
+                                <th class="actionsTh">Actions</th>
                             {% endif %}
                         </tr>
                         </thead>
                         <tbody>
                         {% for item in hangoutWithCity %}
                             <tr>
-                            <td id="col-name">
+                            <td class="col-name">
                                 {% if isMobile %}
                                 <a href="{{ path('hangout_details', {'id': item.hangout.id}) }}">
                                     {% endif %}
@@ -103,23 +103,23 @@
                                 </a>
                                 {% endif %}
                             </td>
-                            <td id="col-date">{{ item.hangout.startingDate|date('d/m/Y H:i') }}</td>
+                            <td class="col-date">{{ item.hangout.startingDate|date('d/m/Y H:i') }}</td>
                             {% if isMobile %}
-                                <td id="col-lieu">{{ item.city }}</td>
+                                <td class="col-lieu">{{ item.city }}</td>
                             {% else %}
-                                <td id="col-deadline">{{ item.hangout.registrationDeadline|date('d/m/Y') }}</td>
-                                <td id="col-inscriptions"><a
+                                <td class="col-deadline">{{ item.hangout.registrationDeadline|date('d/m/Y') }}</td>
+                                <td class="col-inscriptions"><a
                                         href="{{ path('app_profile_update') }}">{{ item.hangout.users|length }}
                                         /{{ item.hangout.nbInscriptionsMax }}</a></td>
-                                <td id="col-status">{{ item.hangout.status.label }}</td>
-                                <td id="col-is-registered">
+                                <td class="col-status">{{ item.hangout.status.label }}</td>
+                                <td class="col-is-registered">
                                     {% if app.user in item.hangout.users %}
                                         X
                                     {% endif %}
                                 </td>
-                                <td id="col-organizer">{{ item.hangout.organizer.firstname }} {{ item.hangout.organizer.lastname }}</td>
-                                <td id="col-campus">{{ item.hangout.campus }}</td>
-                                <td id="col-actions">
+                                <td class="col-organizer">{{ item.hangout.organizer.firstname }} {{ item.hangout.organizer.lastname }}</td>
+                                <td class="col-campus">{{ item.hangout.campus }}</td>
+                                <td class="col-actions">
                                     {% if item.hangout.status.label != 'Archivée' %}
                                         <a href="{{ path('hangout_details', {'id': item.hangout.id}) }}"
                                            class="action-link view">Afficher</a>
@@ -164,9 +164,9 @@
                                                class="action-link unsubscribe">Se désister</a>
                                         {% endif %}
                                     {% endif %}
-                                    {% if is_granted('ROLE_ADMIN') and item.hangout.status.label not in ['Archivée', 'Annulée'] and item.hangout.organizer != app.user %}
+                                    {% if is_granted('ROLE_ADMIN') and item.hangout.status.label not in ['Archivée', 'Annulée', 'Passée'] and item.hangout.organizer != app.user %}
                                         <a href="{{ path('hangout_delete', {'id': item.hangout.id}) }}"
-                                           class="action-link cancel">Annuler (admin)</a>
+                                           class="action-link adminAnnuler">Annuler (admin)</a>
                                     {% endif %}
                                 </td>
                                 </tr>

@@ -15,6 +15,7 @@ use App\Repository\SpotRepository;
 use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
 use App\Services\MobileService;
+use App\Services\StatusService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +34,7 @@ final class HangoutController extends AbstractController
         StatusRepository       $statusRepository,
         EntityManagerInterface $entityManager,
         UserRepository         $userRepository,
+        StatusService          $statusService,
     ): Response
     {
         $user = $this->getUser();
@@ -41,30 +43,32 @@ final class HangoutController extends AbstractController
         $isMobile = stripos($userAgent, 'Mobile');
         $hangouts = $hangoutRepository->findByFilters($user, $filters ?? []);
         //Verification date des sorties
-        $today = new DateTimeImmutable('today');
-        $nextMonth = $today->modify('+1 month');
+         $statusService->statusSort($hangouts);
 
-        foreach ($hangouts as $sortie) {
-            $label = $sortie->getStatus()->getLabel();
-            if ($label !== 'Annulée'){
-
-            if ($label !== 'Passée' && $sortie->getStartingDate() < $today) {
-                $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
-                $sortie->setStatus($statusPassee);
-            }
-            if ($label === 'Passée' && $sortie->getStartingDate() < $nextMonth) {
-                $statusArchivee = $statusRepository->findOneBy(['label' => 'Archivée']);
-                $sortie->setStatus($statusArchivee);
-            }
-            if ($label !== 'Passée' && $sortie->getRegistrationDeadline() < $today) {
-                $statusPassee = $statusRepository->findOneBy(['label' => 'Fermée']);
-                $sortie->setStatus($statusPassee);
-            }
-            }
-            $entityManager->persist($sortie);
-
-        }
-        $entityManager->flush();
+//        $today = new DateTimeImmutable('today');
+//        $nextMonth = $today->modify('+1 month');
+//
+//        foreach ($hangouts as $sortie) {
+//            $label = $sortie->getStatus()->getLabel();
+//            if ($label !== 'Annulée') {
+//
+//                if ($label !== 'Passée' && $sortie->getStartingDate() < $today) {
+//                    $statusPassee = $statusRepository->findOneBy(['label' => 'Passée']);
+//                    $sortie->setStatus($statusPassee);
+//                }
+//                if ($label === 'Passée' && $sortie->getStartingDate() < $nextMonth) {
+//                    $statusArchivee = $statusRepository->findOneBy(['label' => 'Archivée']);
+//                    $sortie->setStatus($statusArchivee);
+//                }
+//                if ($label !== 'Passée' && $sortie->getRegistrationDeadline() < $today) {
+//                    $statusPassee = $statusRepository->findOneBy(['label' => 'Fermée']);
+//                    $sortie->setStatus($statusPassee);
+//                }
+//            }
+//            $entityManager->persist($sortie);
+//
+//        }
+//        $entityManager->flush();
         $form = $this->createForm(HangoutForm::class);
         $form->handleRequest($request);
 
@@ -82,12 +86,17 @@ final class HangoutController extends AbstractController
         }
 
         foreach ($hangouts as $hangout) {
+            $hangoutStatus = $hangout->getStatus()->getLabel();
+            if ((!$this->isGranted("ROLE_ADMIN")) && $hangoutStatus === "Archivée") {
+                continue;
+            }
             $cityName = $hangout->getSpot()?->getCity()?->getName() ?? 'Inconnue';
             $hangoutWithCity[] =
                 [
                     'hangout' => $hangout,
                     'city' => $cityName,
                 ];
+
         }
         return $this->render('hangout/index.html.twig', [
             'hangoutWithCity' => $hangoutWithCity,
@@ -421,12 +430,12 @@ final class HangoutController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-//            // Vérifier si le spot sélectionné est dans une ville désactivée
-//            $selectedSpot = $form->get('hangout')->get('spot')->getData();
-//            if (!$selectedSpot->getCity()->isActive()) {
-//                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
-//                return $this->redirectToRoute('hangout_update', ['id' => $id]);
-//            }
+            // Vérifier si le spot sélectionné est dans une ville désactivée
+            $selectedSpot = $form->get('hangout')->get('spot')->getData();
+            if (!$selectedSpot->getCity()->isActive()) {
+                $this->addFlash('error', "Impossible de modifier la sortie vers une ville désactivée.");
+                return $this->redirectToRoute('hangout_update', ['id' => $id]);
+            }
 
             //test si button publier a ete cliquer
             if ($form->get('publish')->isClicked()) {

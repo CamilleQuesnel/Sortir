@@ -32,7 +32,7 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
             $hangout->setName($faker->catchPhrase());
 
             // Dates réalistes
-            $startDate = $faker->dateTimeBetween('+1 days', '+1 month');
+            $startDate = $faker->dateTimeBetween('-2 month', '+2 month');
             $deadline = (clone $startDate)->modify('-2 days');
             $duration = rand(60, 480); // entre 1h et 8h en minutes
 
@@ -52,9 +52,10 @@ class HangoutFixtures extends Fixture implements DependentFixtureInterface
 
             // Status (aléatoire)
             $statusCount = count(StatusFixtures::$statuss);
-            $statusIndex = rand(0, $statusCount - 1);
+            $statusIndex =  rand(0,1);
             $statusRef = StatusFixtures::STATUS_REFERENCE_PREFIX . $statusIndex;
             $statusEntity = $this->getReference($statusRef, Status::class);
+
             $hangout->setStatus($statusEntity);
 
             // Spot : 30% avec ville inactive, 70% normal
