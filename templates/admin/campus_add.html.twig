@@ -3,11 +3,14 @@
 {% block body %}
     <h1>Ajouter un nouveau campus</h1>
 
-    {{ form_start(form) }}
+    {{ form_start(form, {
+        attr: { class: 'centered-form' }
+    }) }}
     {{ form_row(form.name) }}
 
     <button class="btn btn-primary">Ajouter le campus</button>
     {{ form_end(form) }}
-
-    <a href="{{ path('admin_campus') }}">← Retour à la liste des campus</a>
+    <div class="centered-button">
+        <a href="{{ path('admin_campus') }}" class="btn btn-success">← Retour à la liste des campus</a>
+    </div>
 {% endblock %}

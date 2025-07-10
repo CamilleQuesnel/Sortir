@@ -1,19 +1,17 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Liste des campus{% endblock %}
-
 {% block body %}
 
-
-
     <h1>Gestion des campus</h1>
-    <form method="get" action="{{ path('admin_campus') }}" class="form-inline mb-3">
-        <label for="search" class="me-2">Le nom contient :</label>
-        <input type="text" id="search" name="search" value="{{ app.request.get('search') }}" class="form-control me-2">
-        <button type="submit" class="btn btn-outline-dark">Rechercher</button>
-    </form>
 
-    <table class="table">
+    <div class="centered-form">
+        <form method="get" action="{{ path('admin_campus') }}" class="form-inline mb-3">
+            <label for="search" class="me-2">Le nom contient :</label>
+            <input type="text" id="search" name="search" value="{{ app.request.get('search') }}" class="form-control me-2">
+            <button type="submit" class="btn btn-outline-dark">Rechercher</button>
+        </form>
+    </div>
+
+    <table class="custom-table">
         <thead>
         <tr>
             <th>Nom</th>
@@ -24,23 +22,27 @@
         {% for campus in campus %}
             <tr>
                 <td>{{ campus.name }}</td>
+                <td class="action-cell">
+                    <a href="{{ path('admin_campus_edit', {'id': campus.id}) }}" class="btn-action">Modifier</a>
 
-                <td>
-                    <a href="{{ path('admin_campus_edit', {'id': campus.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
-
-                    <form action="{{ path('admin_campus_soft_delete', {'id': campus.id}) }}" method="post" onsubmit="return confirm('Supprimer ce campus ?');">
+                    <form action="{{ path('admin_campus_soft_delete', {'id': campus.id}) }}"
+                          method="post"
+                          onsubmit="return confirm('Supprimer ce campus ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ campus.id) }}">
-                        <button class="btn btn-sm btn-danger">Supprimer</button>
+                        <button class="btn-action">Supprimer</button>
                     </form>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="3">Aucun campus actif.</td>
+                <td colspan="2">Aucun campus actif.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('admin_campus_add') }}" class="btn btn-success">+ Ajouter un campus</a>
+    <div class="centered-button">
+        <a href="{{ path('admin_campus_add') }}" class="btn btn-success">+ Ajouter un campus</a>
+    </div>
+
 {% endblock %}

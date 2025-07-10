@@ -68,6 +68,24 @@ class HangoutRepository extends ServiceEntityRepository
         }
         return $qb->getQuery()->getResult();
     }
+    public function findHangoutsByUser(User $user): array
+    {
+        return $this->createQueryBuilder('h')
+            ->innerJoin('h.users', 'u')
+            ->where('u = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findHangoutsOrganizedByUser(User $user): array
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.organizer = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 
 
 }

@@ -4,9 +4,17 @@
     <h1>Gestion des comptes utilisateurs</h1>
     <section>
         <table class="custom-table">
+            <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
             {% for user in users %}
                 <tr>
-                    <td>{{ user.pseudo }}</td>
+                    <td>{{ user.pseudo }} - {{ user.firstName }} {{ user.lastName }}</td>
 
                     <td>
                         {% if user.active %}
@@ -27,6 +35,7 @@
                         </form>
                     </td>
                 </tr>
+            </tbody>
             {% endfor %}
         </table>
     </section>
