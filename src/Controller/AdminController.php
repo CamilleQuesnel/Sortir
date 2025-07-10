@@ -419,30 +419,5 @@ final class AdminController extends AbstractController
 
         return $this->redirectToRoute('admin_campus');
     }
-
-
-
-    #[Route('/admin/user/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function deleteUser(Request $request, User $user, EntityManagerInterface $em,MobileService $mobileService
-    ): Response
-    {
-        if ($mobileService->isMobile($request)) {
-            return $this->redirectToRoute('hangout_index');
-        }
-        $token = new CsrfToken('delete-user-' . $user->getId(), $request->request->get('_token'));
-
-        if (!$this->isCsrfTokenValid($token->getId(), $token->getValue())) {
-            throw $this->createAccessDeniedException('CSRF token invalide');
-        }
-
-        $em->remove($user);
-        $em->flush();
-
-        $this->addFlash('success', 'Utilisateur supprimé avec succès.');
-        return $this->redirectToRoute('admin_list_users');
-    }
-
-
 }
 

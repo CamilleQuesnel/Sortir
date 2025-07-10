@@ -190,12 +190,14 @@ button {
 }
 
 
+
+
 .results thead {
+    text-align: center;
     background-color: #f5f5f5;
 }
 
 .results th, .results td {
-    border: 1px solid #4CEBF0;
     padding: 8px 12px;
     text-align: center;
     vertical-align: middle;
@@ -350,43 +352,43 @@ button {
     max-width: 90%;
 }
 
-#col-name {
+.col-name {
     width: 20%;
 }
+.col-date {
+    width: 10%;
+}
+.col-lieu{
+    width: 10%;
+}
+.col-deadline {
+    width: 10%;
+}
 
-#col-date {
-    width: 10%;
-}
-#col-lieu{
-    width: 10%;
-}
-#col-deadline {
-    width: 10%;
-}
-
-#col-inscriptions {
+.col-inscriptions {
     width: 10%;
     text-align: center;
 }
 
-#col-status {
+.col-status {
     width: 8%;
 }
 
-#col-is-registered {
+.col-is-registered {
     width: 6%;
     text-align: center;
 }
 
-#col-organizer {
+.col-organizer {
     width: 12%;
 }
 
-#col-campus {
+.col-campus {
     width: 10%;
 }
 
-#col-actions {
+.col-actions {
+    text-align: center;
     width: 14%;
     white-space: nowrap;
 }
@@ -395,6 +397,9 @@ button {
 .custom-table {
     width: 100%;
     border-collapse: collapse;
+
+    table-layout: auto;
+    overflow-x: auto;
 }
 
 .custom-table thead th {
@@ -452,6 +457,10 @@ button {
 .action-link.cancel {
     color: #fff;
     background-color: #c0392b;
+}
+.action-link.adminAnnuler{
+    color: #fff;
+    background-color: blueviolet;
 }
 
 .action-link.edit {
