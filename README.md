@@ -1,4 +1,4 @@
-root@1ac19e687b1c:/workspace/Sortir# nl -ba README.md | sed -n '1,40p'
+
    # Sortir
 
 ## Présentation
@@ -40,8 +40,6 @@ nements, s'inscrire à ceux existants et suivre les activités de leur campus.
      php bin/console doctrine:fixtures:load
      ```
   6. Démarrer le serveur de développement
-     ```bash
-root@1ac19e687b1c:/workspace/Sortir# nl -ba README.md | sed -n '40,80p'
      ```bash
      symfony server:start
      ```
