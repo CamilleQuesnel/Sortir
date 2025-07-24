@@ -1,56 +1,53 @@
 root@1ac19e687b1c:/workspace/Sortir# nl -ba README.md | sed -n '1,40p'
-     1  # Sortir
-     2
-     3  ## Présentation
-     4  Sortir.com est une application web réalisée avec Symfony 7 permettant de
+   # Sortir
+
+## Présentation
+ Sortir.com est une application web réalisée avec Symfony 7 permettant de
  gérer des sorties entre participants. Les utilisateurs peuvent proposer des évè
 nements, s'inscrire à ceux existants et suivre les activités de leur campus.
-     5
-     6  ## Fonctionnalités principales
-     7  - Inscription et authentification des utilisateurs
-     8  - Création et gestion des sorties (dates, durée, lieu…)
-     9  - Filtrage des sorties par campus, période ou état
-    10  - Inscription et désinscription à une sortie
-    11  - Administration des villes, des campus et des utilisateurs
-    12  - Import d'utilisateurs depuis un fichier CSV
-    13  - Gestion des mots de passe oubliés et envoi de notifications par courri
-el
-    14  - Affichage adapté aux mobiles
-    15
-    16  ## Installation
-    17  1. Cloner le dépôt puis placer vous à la racine du projet
-    18     ```bash
-    19     git clone <repository-url>
-    20     cd Sortir
-    21     ```
-    22  2. Installer les dépendances PHP
-    23     ```bash
-    24     composer install
-    25     ```
-    26  3. Copier le fichier `.env` adapté à votre environnement et lancer les c
-onteneurs nécessaires (PostgreSQL et Mailpit)
-    27     ```bash
-    28     docker compose up -d
-    29     ```
-    30  4. Créer la base de données et exécuter les migrations
-    31     ```bash
-    32     php bin/console doctrine:database:create
-    33     php bin/console doctrine:migrations:migrate
-    34     ```
-    35  5. (Optionnel) Charger les données de démonstration
-    36     ```bash
-    37     php bin/console doctrine:fixtures:load
-    38     ```
-    39  6. Démarrer le serveur de développement
-    40     ```bash
+     
+  ## Fonctionnalités principales
+  - Inscription et authentification des utilisateurs
+  - Création et gestion des sorties (dates, durée, lieu…)
+  - Filtrage des sorties par campus, période ou état
+  - Inscription et désinscription à une sortie
+  - Administration des villes, des campus et des utilisateurs
+  - Import d'utilisateurs depuis un fichier CSV
+  - Gestion des mots de passe oubliés et envoi de notifications par courriel
+  - Affichage adapté aux mobiles
+
+ ## Installation
+   1. Cloner le dépôt puis placer vous à la racine du projet
+      ```bash
+      git clone <repository-url>
+      cd Sortir
+      ```
+   2. Installer les dépendances PHP
+      ```bash
+      composer install
+      ```
+   3. Copier le fichier `.env` adapté à votre environnement et lancer les conteneurs nécessaires (PostgreSQL et Mailpit)
+     ```bash
+     docker compose up -d
+     ```
+  4. Créer la base de données et exécuter les migrations
+     ```bash
+     php bin/console doctrine:database:create
+     php bin/console doctrine:migrations:migrate
+     ```
+  5. (Optionnel) Charger les données de démonstration
+     ```bash
+     php bin/console doctrine:fixtures:load
+     ```
+  6. Démarrer le serveur de développement
+     ```bash
 root@1ac19e687b1c:/workspace/Sortir# nl -ba README.md | sed -n '40,80p'
-    40     ```bash
-    41     symfony server:start
-    42     ```
-    43
-    44  ## Tests
-    45  L'application est livrée avec quelques tests automatisés basés sur PHPUn
-it. Pour les exécuter :
-    46  ```bash
-    47  ./vendor/bin/phpunit
-    48  ```
+     ```bash
+     symfony server:start
+     ```
+
+  ## Tests
+  L'application est livrée avec quelques tests automatisés basés sur PHPUnit. Pour les exécuter :
+  ```bash
+  ./vendor/bin/phpunit
+  ```
